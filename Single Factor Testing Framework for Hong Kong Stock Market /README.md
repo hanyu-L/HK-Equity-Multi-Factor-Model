@@ -9,17 +9,17 @@ Skewness Factor
 Momentum Factor  
 Turnover Factor  
 3. Data Preprocessing & Cleaning
-4. Factor Neutralization
-The Unified Neutralization Model
-Industry (or Sector) Neutralization
-Size Neutralization
-Final Standardization
-5. Single-Factor Test
-IC and RankIC
-IR
-Stratified Backtesting
-Factor Assessment Approach
-Testing Results
+4. Factor Neutralization  
+The Unified Neutralization Model  
+Industry (or Sector) Neutralization  
+Size Neutralization  
+Final Standardization  
+5. Single-Factor Test  
+IC and RankIC  
+IR  
+Stratified Backtesting  
+Factor Assessment Approach  
+Testing Results  
 6. Multi-Factor Correlation Analysis
 7. Fama-MacBeth Regression Analysis
 
