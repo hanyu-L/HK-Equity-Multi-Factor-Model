@@ -23,3 +23,13 @@ This paper develops a full-process quantitative single-factor research and backt
 6. Multi-Factor Correlation Analysis
 7. Fama-MacBeth Regression Analysis
 
+## 1. Data Ingestion
+Data used in this report is imported via the yfinance API. We select daily OHLCV data and corporate metadata of 261 stocks across 7 industries, covering the period from January 1, 2022 to December 31, 2024.
+
+Collected data fields includes:
+Dynamic data: date, ticker, open, high, low, close, volume, stock name, turnover, 
+Static metadata: market capitalization, sector, industry
+
+## 2. Factor Construction
+### 2.1 Skewness Factor
+The skewness factor is calculated as the sample skewness of individual stock daily returns over the past 20 trading days. In financial markets, skewness captures shifts in recent market sentiment and asymmetric risks embedded in stock price movements. A positive skewness indicates a fatter right tail in return distribution that leans toward higher gains, while negative skewness points to a thicker left tail associated with downside losses.
