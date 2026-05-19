@@ -4,10 +4,10 @@ This paper develops a full-process quantitative single-factor research and backt
 ## Table of Contents
 
 1. Data Ingestion
-2. Factor Construction
-Skewness Factor
-Momentum Factor
-Turnover Factor
+2. Factor Construction  
+Skewness Factor  
+Momentum Factor  
+Turnover Factor  
 3. Data Preprocessing & Cleaning
 4. Factor Neutralization
 The Unified Neutralization Model
