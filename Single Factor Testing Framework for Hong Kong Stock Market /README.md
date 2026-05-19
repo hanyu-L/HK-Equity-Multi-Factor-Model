@@ -32,4 +32,7 @@ Static metadata: market capitalization, sector, industry
 
 ## 2. Factor Construction
 ### 2.1 Skewness Factor
-The skewness factor is calculated as the sample skewness of individual stock daily returns over the past 20 trading days. In financial markets, skewness captures shifts in recent market sentiment and asymmetric risks embedded in stock price movements. A positive skewness indicates a fatter right tail in return distribution that leans toward higher gains, while negative skewness points to a thicker left tail associated with downside losses.
+The skewness factor is calculated as the sample skewness of individual stock daily returns over the past 20 trading days. In financial markets, skewness captures shifts in recent market sentiment and asymmetric risks embedded in stock price movements. A positive skewness indicates a fatter right tail in return distribution that leans toward higher gains, while negative skewness points to a thicker left tail associated with downside losses.  
+$$
+S = \frac{n}{(n-1)(n-2)} \sum \left( \frac{X_i - \bar{X}}{\sigma} \right)^3
+$$
