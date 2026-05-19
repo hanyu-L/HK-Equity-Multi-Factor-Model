@@ -5,21 +5,21 @@ This paper develops a full-process quantitative single-factor research and backt
 
 1. Data Ingestion
 2. Factor Construction  
-Skewness Factor  
-Momentum Factor  
-Turnover Factor  
+2.1 Skewness Factor  
+2.2 Momentum Factor  
+2.3 Turnover Factor  
 3. Data Preprocessing & Cleaning
 4. Factor Neutralization  
-The Unified Neutralization Model  
-Industry (or Sector) Neutralization  
-Size Neutralization  
-Final Standardization  
+4.1 The Unified Neutralization Model  
+4.2 Industry (or Sector) Neutralization  
+4.3 Size Neutralization  
+4.4 Final Standardization  
 5. Single-Factor Test  
-IC and RankIC  
-IR  
-Stratified Backtesting  
-Factor Assessment Approach  
-Testing Results  
+5.1 IC and RankIC  
+5.2 IR  
+5.3 Stratified Backtesting  
+5.4 Factor Assessment Approach  
+5.5 Testing Results  
 6. Multi-Factor Correlation Analysis
 7. Fama-MacBeth Regression Analysis
 
