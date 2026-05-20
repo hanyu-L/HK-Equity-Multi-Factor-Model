@@ -214,28 +214,64 @@ By contrast, the momentum factor is completely ineffective within the sample per
 The skewness factor shows inconsistent performance. Stratified backtests reveal certain positive return differentiation yet lack stability. Its long-short portfolio returns remain negative for a long time and fail to fully align with the direction of IC statistics, indicating weak effectiveness under current market conditions and requiring further verification.
 
  <div align="center">
-Turnover Factor Stratified Backtest result<br>
+Turnover Factor Stratified Backtest Result<br>
 </div>
 
+![turnover](https://github.com/hanyu-L/Single-Factor-Testing-Framework/blob/05764affc242361507324099527502be22561a64/Series%201%3A%20Single-Factor-Testing-Framework/Screenshot_turn%202026-05-18%20163525.png)
+The turnover factor is highly effective and stable, with stratified results fully consistent with IC statistical conclusions. It features distinct monotonic grouping curves and steadily rising long-short returns, ranking as the best-performing factor in this study.
 
+ <div align="center">
+Momentum Factor Stratified Backtest Result<br>
+</div>
 
+![Momentum](https://github.com/hanyu-L/Single-Factor-Testing-Framework/blob/05764affc242361507324099527502be22561a64/Series%201%3A%20Single-Factor-Testing-Framework/Screenshot_momen%202026-05-18%20163730.png)
 
+ <div align="center">
+Skewness Factor Stratified Backtest Result<br>
+</div>
 
+![Skewness](https://github.com/hanyu-L/Single-Factor-Testing-Framework/blob/05764affc242361507324099527502be22561a64/Series%201%3A%20Single-Factor-Testing-Framework/Screenshot_skew%202026-05-18%20163457.png)
 
+## 6. Multi-Factor Correlation Analysis
+Calculate the cross-sectional Spearman Rank Correlation between each neutralized factor. The specific steps are as follows:<br>
+&emsp; 1)	On each trading day, compute the pairwise correlation coefficient matrix among the skewness factor, momentum factor, and turnover factor.<br>
+&emsp; 2)	Average the correlation coefficient matrices over the full sample period to obtain the average correlation matrix.
 
+ <div align="center">
+Correlation matrix between factors<br>
+</div>
+ <div align="center">
 
+ &emsp;&emsp;&emsp;&emsp;&emsp;| Skewness | Momentum | Turnover |  
+ ------------- | --------------- | --------------- | --------------- |  
+ Momentum       | 0.25         | 1         | -0.052          |  
+ Skewness   | 1         | 0.25         | 0.094         |  
+ Turnover        | 0.094          | -0.052          | 1          |  
+ 
+</div>
 
+The results show that the correlation coefficients among the three factors are all below 0.3, presenting favorable orthogonality and strong complementarity. Such low redundancy indicates that each factor captures distinctly different market information, which helps enhance the risk diversification capacity of portfolios via multi-factor combination.
 
+## 7. Fama-MacBeth Regression Analysis
+To further verify the explanatory power of each factor on future returns and the stability of risk premia, we adopts the Fama-MacBeth two-stage regression method.
+Cross-sectional regressions are performed on each trading day t to estimate the daily factor returns (risk premia):
 
+$$R_{i,t+1}\ =\ \alpha_t\ +\ \lambda_{1,t}f_{i,skew,t}\ +\ \lambda_{2,t}f_{i,mom,t}\ +\ \lambda_{3,t}f_{i,turn,t}\ +\ \epsilon_{i,t+1}$$
 
+Where:<br>
+$R_{i,t+1}$: return of stock $i$ on day $t+1$.<br>
+$\alpha_t$: common return component not explained by the three factors.<br>
+$\lambda_{j,t}$: factor premium (risk premium) of factor $j$ at day $t$, representing the return investors demand for exposure to factor $j$.<br>
+$f_{i,skew,t}$: standardized skewness factor value of stock $i$ at day $t$.<br>
+$f_{i,mom,t}$: standardized momentum factor value of stock $i$ at day $t$.<br>
+$f_{i,turn,t}$: standardized turnover factor value of stock $i$ at day $t$.<br>
+$\epsilon_{i,t+1}$: the idiosyncratic error term of stock $i$ at day $t+1$, which is assumed to be cross-sectionally uncorrelated.
 
+The regression adopts Weighted Least Squares (WLS) with the square root of market capitalization as weight to reduce noise interference from small-cap stocks. After obtaining the daily $\lambda_t$ series, we calculate its time-series mean and t-statistic to verify whether the factor risk premium is significantly different from zero.
 
+The Fama-MacBeth test results indicate that the turnover factor possesses the strongest predictive power within the model, with a t-statistic of -4.08, well exceeding the critical value of 1.96 at the 5% significance level, confirming a significant and stable negative risk premium. 
 
-
-
-
-
-
+In contrast, after eliminating disturbances from industry, market capitalization and other factors, the momentum factor and skewness factor show weak independent predictive ability, with t-statistics standing at -0.67 and 0.99 respectively, both failing to reach the significance threshold. Although the momentum factor delivers strong cross-sectional explanatory power on 31% of trading days measured by the proportion of periods with absolute t-statistics above 2, it still lacks sufficient return stability across the full sample period.
 
 
 
