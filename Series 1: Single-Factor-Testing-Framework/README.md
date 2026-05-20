@@ -103,8 +103,10 @@ Weight logic of WLS: The weight matrix $W$ adopted in regression is a diagonal m
 _Note: weighting by the square root of market capitalization aims to mitigate the excessive impact of small-cap stocks on regression coefficients and enhance the representativeness of mid-to-large-cap samples._
 
 ### 4.4 Final Standardization
-After industry and market capitalization neutralization, we obtain the residual $\epsilon_{i,t}$ of each stock, which represents the pure factor value excluding size and industry influences. Cross-sectional Z-score standardization is conducted to ensure comparability among different factors.<br>
-$${\hat{f}}_{i,t}=\frac{\epsilon_{i,t}-\mu_{\epsilon,t}}{\sigma_{\epsilon,t}}$$  
+After industry and market capitalization neutralization, we obtain the residual $\epsilon_{i,t}$ of each stock, which represents the pure factor value excluding size and industry influences. Cross-sectional Z-score standardization is conducted to ensure comparability among different factors.
+
+$${\hat{f}}_{i,t}=\frac{\epsilon_{i,t}-\mu_{\epsilon,t}}{\sigma_{\epsilon,t}}$$
+
 Where:<br>
 $\mu_{\epsilon,t}$: mean value of all sample residuals on the current day.<br>
 $\sigma_{\epsilon,t}$: standard deviation of all sample residuals on the current day.
