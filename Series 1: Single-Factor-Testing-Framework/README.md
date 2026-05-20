@@ -49,7 +49,7 @@ It is worth noting that momentum strategies tend to underperform under extreme m
 $$Momentum\ =\ \frac{P_{t-1}}{P_{t-n}}\ -\ 1$$  
 
 Where:  
-$P_t$: the closing price on day t-1.<br>
+$P_t$: the closing price on day $t-1$.<br>
 $P_t-n$: the closing price recorded $n$ trading days prior.  
 In this study, we set $n$ = 20, representing the closing price 20 trading days earlier (approximately one calendar month)
 
@@ -85,7 +85,7 @@ On each trading day t, we conduct the following cross-sectional regression for e
 $$f_{i,t} = \beta_{0,t} + \beta_{\text{size},t} \cdot \ln(MC_{i,t}) + \sum_{j=1}^{K-1} \gamma_{j,t} \cdot Ind_{i,j,t} + \epsilon_{i,t}$$
 
 Where:<br>
-$f_{i,t}$: raw factor value of stock i on day t, including skewness, momentum and turnover.<br>
+$f_{i,t}$: raw factor value of stock $i$ on day $t$, including skewness, momentum and turnover.<br>
 $\epsilon_{i,t}$: regression residual, namely the purified factor value after neutralization.
 
 ### 4.2 Industry (or Sector) Neutralization
@@ -96,10 +96,10 @@ Assuming there are n industries in the market, the regression model captures the
 $$f_i=\beta_0+\sum_{j=1}^{n}\gamma_j\cdot Ind_{i,j}+\epsilon_i$$
 
 Where:<br>
-$f_i$: raw factor value of stock i, such as original momentum and skewness.<br>
+$f_i$: raw factor value of stock $i$, such as original momentum and skewness.<br>
 $\beta_0$: intercept term representing the benchmark factor level across the whole market.<br>
-$Ind_{i,j}$: industry dummy variable, which equals 1 if stock i belongs to industry j , otherwise 0.<br>
-$\gamma_j$: specific effect of industry j, measuring its average contribution to the factor.<br>
+$Ind_{i,j}$: industry dummy variable, which equals 1 if stock $i$ belongs to industry $j$ , otherwise 0.<br>
+$\gamma_j$: specific effect of industry $j$, measuring its average contribution to the factor.<br>
 $\epsilon_i$: regression residual, namely the neutralized alpha signal excluding industry deviations.
 
 ### 4.3 Size Neutralization
