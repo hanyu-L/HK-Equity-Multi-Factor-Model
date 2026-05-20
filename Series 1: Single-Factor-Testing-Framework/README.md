@@ -70,7 +70,7 @@ First conduct universe filtering:<br>
 •	Remove stocks whose turnover falls within the bottom 20% of the whole market.
 
 Proceed with cross-sectional processing afterwards:<br>
-•	Outlier removal via MAD method<br>b
+•	Outlier removal via MAD method<br>
 •	Z-score standardization<br>
 •	Missing values are filled with zero, which equals the mean value after standardization.
 
