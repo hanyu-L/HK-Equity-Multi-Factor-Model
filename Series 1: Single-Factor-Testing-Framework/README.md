@@ -207,11 +207,11 @@ On the daily cross-section, the 261 stocks are sorted by target factor values in
 &emsp; 1)	Cumulative net value of the five groups<br>
 &emsp; 2)	Cumulative return curve of long-short portfolios
 
-Among the three factors studied, the Turnover Factor delivers the best performance. Its stratified backtest results are highly consistent with IC and IR statistics. The net value curves of quintile portfolios show steady monotonic stratification, and low-turnover portfolios consistently outperform high-turnover portfolios significantly. Meanwhile, the long-short portfolio return curve keeps rising steadily in the long run, proving that this factor owns sustainable and reliable predictive power and practical application value.
+Among the three factors studied, the turnover factor delivers the best performance. Its stratified backtest results are highly consistent with IC and IR statistics. The net value curves of quintile portfolios show steady monotonic stratification, and low-turnover portfolios consistently outperform high-turnover portfolios significantly. Meanwhile, the long-short portfolio return curve keeps rising steadily in the long run, proving that this factor owns sustainable and reliable predictive power and practical application value.
 
-By contrast, the Momentum Factor is completely ineffective within the sample period. Its stratified net value curves overlap randomly without valid differentiation, and long-short returns fluctuate around zero, failing to generate stable excess returns.
+By contrast, the momentum factor is completely ineffective within the sample period. Its stratified net value curves overlap randomly without valid differentiation, and long-short returns fluctuate around zero, failing to generate stable excess returns.
 
-The Skewness Factor shows inconsistent performance. Stratified backtests reveal certain positive return differentiation yet lack stability. Its long-short portfolio returns remain negative for a long time and fail to fully align with the direction of IC statistics, indicating weak effectiveness under current market conditions and requiring further verification.
+The skewness factor shows inconsistent performance. Stratified backtests reveal certain positive return differentiation yet lack stability. Its long-short portfolio returns remain negative for a long time and fail to fully align with the direction of IC statistics, indicating weak effectiveness under current market conditions and requiring further verification.
 
  <div align="center">
 Turnover Factor Stratified Backtest result<br>
