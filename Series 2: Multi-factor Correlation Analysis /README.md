@@ -88,20 +88,20 @@ $$PEG = \frac{PE}{{sales\_g}_{ttm}}$$
 Match the TTM financial statements corresponding to the fiscal closing date lagged by one full year. Observations without complete prior-year financial reports are set to missing.
 General formula:
 
-$$G_{ttm} = \frac{X_{ttm,current}}{X_{ttm,last\_year}} - 1$$
+$$G_{ttm} = \frac{X_{ttm,current}}{X_{{ttm,last\_year}}} - 1$$
 
-$X_{ttm,current}$ = current-period trailing 12-month metric derived from financial statements  
-$X_{ttm,last\_year}$ = trailing 12-month metric recorded at the identical fiscal closing date of the prior year.  
+$X_{ttm,current}$ = current-period trailing 12-month metric derived from financial statements
+$X_{{ttm,last\_year}}$ = trailing 12-month metric recorded at the identical fiscal closing date of the prior year.
 If the prior-year TTM value is missing or equals zero, the factor is assigned np.nan.
 
 Sales_G_ttm: TTM sales year-on-year growth
-$$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{ttm,last\_year}} - 1$$
+$$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{{ttm,last\_year}}} - 1$$
 
 Profit_G_ttm: TTM net profit year-on-year growth
-$$Profit\_G_{ttm} = \frac{net\_profit_{ttm,current}}{net\_profit_{ttm,last\_year}} - 1$$
+$$Profit\_G_{ttm} = \frac{net\_profit_{ttm,current}}{net\_profit_{{ttm,last\_year}}} - 1$$
 
-OCF_G_ttm: TTM operating cash flow YoY growth 
-$$OCF\_G_{ttm} = \frac{ocf_{ttm,current}}{ocf_{ttm,last\_year}} - 1$$
+OCF_G_ttm: TTM operating cash flow YoY growth
+$$OCF\_G_{ttm} = \frac{ocf_{ttm,current}}{ocf_{{ttm,last\_year}}} - 1$$
 
 ROE_G_ttm: TTM ROE year-on-year growth
-$$ROE\_G_{ttm} = \frac{roe_{ttm,current}}{roe_{ttm,last\_year}} - 1$$
+$$ROE\_G_{ttm} = \frac{roe_{ttm,current}}{roe_{{ttm,last\_year}}} - 1$$
