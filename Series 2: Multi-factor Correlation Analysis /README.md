@@ -59,7 +59,7 @@ SP_ttm: sales revenue per market cap
 
 PE：price earnings ratio 
 
-BP =  (total market cap)/〖net revenue〗_ttm 
+$$BP =  (total market cap)/〖net revenue〗_ttm$$
 
 PB：price book ratio 
 
