@@ -45,37 +45,32 @@ A-shares mandate annual and semi-annual filings with optional quarterly reports,
 3)	The TTM value becomes NaN if the matching prior-period report or prior annual report cannot be located. All financial factors are filled with NaN for stocks lacking any financial disclosures.  
 
 ### Valuation factors
-#### Earnings-to-price ratios
-$$EP_{ttm} = \frac{\text{NetProfit}_{ttm}}{\text{MarketCap}}$$
+#### 1) Earnings-to-price ratios
+$$EP_{ttm} = \frac{NetProfit_{ttm}}{MarketCap}$$
 
-EPcut_ttm: deducted non-recurring earnings per market cap
-〖EPcut〗_ttm  =  〖Net Profit Excluding Non-recurring Items〗_TTM/(Total market_cap)
-	Asset-to-price ratios
+$EPcut_{ttm}$: deducted non-recurring earnings per market cap
+$$EPcut_{ttm} = \frac{Net Profit Excluding Non-recurring Items_{TTM}}{Total market\_cap}$$
+
+#### 2) Asset-to-price ratios
 BP: book value per market cap
-BP =  shareholders' equity/(total market cap)
-SP_ttm: sales revenue per market cap
-〖SP〗_ttm  =  〖revenue〗_ttm/total market cap
-	Inverted valuation multiples
+$$BP = \frac{shareholders' equity}{total market cap}$$
 
-PE：price earnings ratio 
+$SP_{ttm}$: sales revenue per market cap
+$$SP_{ttm} = \frac{revenue_{ttm}}{total market cap}$$
 
-$$BP =  (total market cap)/〖net revenue〗_ttm$$
+#### 3) Inverted valuation multiples
+PE: price earnings ratio
+$$PE = \frac{total market cap}{net revenue_{ttm}}$$
 
-PB：price book ratio 
+PB: price book ratio
+$$PB = \frac{total market cap}{shareholders' equity}$$
 
-PB =  (total market cap)/(shareholders' equity)  
+PCF: price cash flow ratio
+$$PCF = \frac{total market cap}{operating cash flow_{ttm}}$$
 
-PCF：price cash flow ratio 
+PS: price sales ratio
+$$PS = \frac{total market cap}{revenue_{ttm}}$$
 
-PCF =  (total market cap)/〖operating cash flow〗_ttm
-
-PS：price sales ratio
-
-PS =  (total market cap)/〖revenue〗_ttm 
-
-Growth-value alignment
-
-PEG：price earnings growth. Assign NaN when the growth rate is zero.
-
-PEG =  PE/〖sales_g〗_ttm 
-
+### Growth-value alignment
+PEG: price earnings growth. Assign NaN when the growth rate is zero.
+$$PEG = \frac{PE}{sales\_g_{ttm}}$$
