@@ -309,6 +309,6 @@ $AvgIC$ and $\text{IC\_IR}$ of several factors are marked as NaN. This is becaus
 
 
 
-
+$\text{IC}\underline{}\text{IR}$
 
 
