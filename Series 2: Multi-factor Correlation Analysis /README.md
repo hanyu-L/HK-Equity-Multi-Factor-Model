@@ -305,7 +305,7 @@ Factor test results (sorted in descending order of IC_IR):
 
 </div>
 
-$AvgIC$ and $IC_IR$ of several factors are marked as NaN. This is because there is no monthly cross-section within the backtesting period satisfies the minimum sample-size requirement simultaneously.
+$AvgIC$ and $IC\_IR$ of several factors are marked as NaN. This is because there is no monthly cross-section within the backtesting period satisfies the minimum sample-size requirement simultaneously.
 
 
 
