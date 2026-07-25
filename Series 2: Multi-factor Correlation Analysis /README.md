@@ -104,6 +104,10 @@ $$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{ttm,lastyear}} - 1$$
 
 $$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{ttm,last-year}} - 1$$
 
+Sales_G_ttm: TTM sales year-on-year growth
+
+$$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{ttm,last-year}} - 1$$
+
 &emsp; Profit_G_ttm: TTM net profit year-on-year growth
 
 $$Profit\_G_{ttm} = \frac{net\_profit_{ttm,current}}{net\_profit_{\mathit{ttm,last\_year}}} - 1$$
