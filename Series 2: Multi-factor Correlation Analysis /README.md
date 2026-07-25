@@ -61,8 +61,8 @@ $$BP = \frac{shareholders' equity}{total market cap}$$
 
 $$SP_{ttm} = \frac{revenue_{ttm}}{total market cap}$$
 
-&emsp; 3) Inverted valuation multiples
-&emsp; PE: price earnings ratio
+&emsp; 3) Inverted valuation multiples  
+&emsp; PE: price earnings ratio  
 
 $$PE = \frac{total market cap}{net revenue_{ttm}}$$
 
