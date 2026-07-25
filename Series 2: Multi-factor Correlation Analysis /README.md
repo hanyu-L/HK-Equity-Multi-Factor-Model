@@ -112,46 +112,21 @@ ROE_G_ttm: TTM ROE year-on-year growth
 $$ROE\_G_{ttm} = \frac{roe_{ttm,current}}{roe_{\mathit{ttm,last\_year}}} - 1$$
 
 
-------  
-### Growth Factors (TTM Basis)
+-----
+## Sales_G_ttm: TTM sales year-on-year growth
 
-**1. Sales_G_ttm: TTM sales year-on-year growth**
+$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{\mathit{ttm,last\_year}}} - 1$
 
-$$ \text{Sales\_G}_{ttm} = \frac{\text{rev}_{ttm,current}}{\text{rev}_{ttm,last\_year}} - 1 $$
+## Profit_G_ttm: TTM net profit year-on-year growth
 
-**2. Profit_G_ttm: TTM net profit year-on-year growth**
+$Profit\_G_{ttm} = \frac{net\_profit_{ttm,current}}{net\_profit_{\mathit{ttm,last\_year}}} - 1$
 
-$$ \text{Profit\_G}_{ttm} = \frac{\text{net\_profit}_{ttm,current}}{\text{net\_profit}_{ttm,last\_year}} - 1 $$
+## OCF_G_ttm: TTM operating cash flow YoY growth
 
-**3. OCF_G_ttm: TTM operating cash flow YoY growth**
+$OCF\_G_{ttm} = \frac{ocf_{ttm,current}}{ocf_{\mathit{ttm,last\_year}}} - 1$
 
-$$ \text{OCF\_G}_{ttm} = \frac{\text{ocf}_{ttm,current}}{\text{ocf}_{ttm,last\_year}} - 1 $$
+## ROE_G_ttm: TTM ROE year-on-year growth
 
-**4. ROE_G_ttm: TTM ROE year-on-year growth**
-
-$$ \text{ROE\_G}_{ttm} = \frac{\text{roe}_{ttm,current}}{\text{roe}_{ttm,last\_year}} - 1 $$
-
-
-
----
-
-### Growth Factors (TTM Basis)
-
-**1. Sales_G_ttm: TTM sales year-on-year growth**
-
-$$ \text{Sales\_G}_{ttm} = \frac{\text{rev}_{ttm,current}}{\text{rev}_{ttm,last\_year}} - 1 $$
-
-**2. Profit_G_ttm: TTM net profit year-on-year growth**
-
-$$ \text{Profit\_G}_{ttm} = \frac{\text{net\_profit}_{ttm,current}}{\text{net\_profit}_{ttm,last\_year}} - 1 $$
-
-**3. OCF_G_ttm: TTM operating cash flow YoY growth**
-
-$$ \text{OCF\_G}_{ttm} = \frac{\text{ocf}_{ttm,current}}{\text{ocf}_{ttm,last\_year}} - 1 $$
-
-**4. ROE_G_ttm: TTM ROE year-on-year growth**
-
-$$ \text{ROE\_G}_{ttm} = \frac{\text{roe}_{ttm,current}}{\text{roe}_{ttm,last\_year}} - 1 $$
-
+$ROE\_G_{ttm} = \frac{roe_{ttm,current}}{roe_{\mathit{ttm,last\_year}}} - 1$
 
 
