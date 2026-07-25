@@ -318,3 +318,12 @@ $\mathit{\text{IC}\underline{\vphantom{I}}\text{IR}}$
 
 $\mathit{\text{IC}\underline{}\text{IR}}$
 
+$\mathit{IC\mkern-1mu\underline{\mkern-1mu}IR}$
+
+
+
+
+
+
+
+
