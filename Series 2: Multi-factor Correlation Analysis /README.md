@@ -135,3 +135,71 @@ ROE_G_6m: semi-annual ROE year-on-year growth
 $$ROE\_G_{6m} = \frac{roe\ 6m\_YoY_{current}}{roe\ 6m\_YoY_{last\_year}} - 1$$
 
 
+### Profitability quality factors  
+#### 1) Annualised TTM profitability metrics
+$roe_{ttm}$: return on equity TTM
+
+$$roe_{ttm} = \frac{net\_profit_{ttm}}{total\ equity\ avg}$$
+
+$roa_{ttm}$: return on assets TTM 
+
+$$roa_{ttm} = \frac{net\_profit_{ttm}}{total\ asset\ avg}$$
+
+$gpm_{ttm}$: gross profit margin TTM
+
+$$gpm_{ttm} = \frac{gross\_profit_{ttm}}{rev_{ttm}}$$
+
+$cfo\_to\_np_{ttm}$: cash flow to net profit TTM
+
+$$cfo\_to\_np_{ttm} = \frac{ocf_{ttm}}{net\_profit_{ttm}}$$
+
+$roic_{ttm}$: return on invested capital TTM
+
+$$roic_{ttm} = \frac{ebit_{ttm}}{invest\_cap_{ttm}}$$
+
+#### 2) Semi-annual YoY quality growth metrics
+General formula for year-on-year growth:  
+
+YoY = $\frac{\text{Current semi-annual single-period metric}}{\text{Prior-year corresponding semi-annual single-period metric}} -1$
+
+If observations are incomplete or the denominator is zero, the factor value will be set to np.nan.
+
+roe_6m_YoY: return on equity semi-annual YoY
+
+$$roe\_6m\_YoY = \frac{roe\_6m\_YoY_{current}}{roe\_6m\_YoY_{last\_semi}} - 1$$
+
+roa_YoY: return on assets semi-annual YoY
+
+$$roa\_YoY = \frac{roa\_YoY_{current}}{roa\_YoY_{last\_semi}} - 1$$
+
+gpm_semi_YoY: gross profit margin semi-annual YoY
+
+$$gpm\_semi\_YoY = \left(\frac{GrossProfit_{current}}{OperatingRevenue_{current}} \bigg/ \frac{GrossProfit_{last\_semi}}{OperatingRevenue_{last\_semi}}\right) - 1$$
+
+
+
+
+### Selected computational results
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
