@@ -53,7 +53,8 @@ $EPcut_{ttm}$: deducted non-recurring earnings per market cap
 $$EPcut_{ttm} = \frac{NetProfit Excluding Non-recurring Items_{TTM}}{Total market\_cap}$$
 
 #### 2) Asset-to-price ratios
-BP: book value per market cap  
+BP: book value per market cap
+
 $$BP = \frac{shareholders' equity}{total market cap}$$
 
 $SP_{ttm}$: sales revenue per market cap  
