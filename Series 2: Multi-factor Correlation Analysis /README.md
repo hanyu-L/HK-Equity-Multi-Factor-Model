@@ -305,25 +305,19 @@ Factor test results (sorted in descending order of IC_IR):
 
 </div>
 
-$AvgIC$ and $\text{IC\_IR}$ of several factors are marked as NaN. This is because there is no monthly cross-section within the backtesting period satisfies the minimum sample-size requirement simultaneously.
+$AvgIC$ and $\text{IC}\underline{}\text{IR}$ of several factors are marked as NaN. This is because there is no monthly cross-section within the backtesting period satisfies the minimum sample-size requirement simultaneously.
 
+## 4.  Correlation and multicollinearity of surviving factors  
+### 4.1 Correlation testing methodology  
+Pearson correlation coefficients are adopted to measure the degree of linear association between distinct factors, identifying information redundancy and evaluating factor independence.
 
+$$\rho(F_{a},F_{b}) = \frac{Cov(F_{a},F_{b})}{\sqrt{Var(F_{a})}\cdot\sqrt{Var(F_{b})}}$$
 
-$\text{IC}\underline{}\text{IR}$
+Cov denotes covariance, and Var represents factor variance.
 
-$$\mathit{\text{IC}\underline{}\text{IR}}$$
-
-
-$\mathit{\text{IC}\underline{\vphantom{I}}\text{IR}}$
-
-$\mathit{\text{IC}\underline{}\text{IR}}$
-
-$\mathit{IC\mkern-1mu\underline{\mkern-1mu}IR}$
-
-
-
-
-$\mathit{IC}\underline{}\mathit{IR}$
+&emsp; $\rho=1$: perfect positive linear correlation  
+&emsp; $\rho=-1$: perfect negative linear correlation  
+&emsp; $\rho=0$: no linear correlation  
 
 
 
