@@ -323,7 +323,7 @@ $\mathit{IC\mkern-1mu\underline{\mkern-1mu}IR}$
 
 
 
-
+$\mathit{IC}\underline{}\mathit{IR}$
 
 
 
