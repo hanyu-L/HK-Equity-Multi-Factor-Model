@@ -79,7 +79,7 @@ $$PCF = \frac{total market cap}{operating cash flow_{ttm}}$$
 
 $$PS = \frac{total market cap}{revenue_{ttm}}$$
 
-### Growth-value alignment
+&emsp; 4) Growth-value alignment
 &emsp; PEG: price earnings growth. Assign NaN when the growth rate is zero.
 
 $$PEG = \frac{PE}{{sales\_g}_{ttm}}$$
