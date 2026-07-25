@@ -57,22 +57,28 @@ BP: book value per market cap
 
 $$BP = \frac{shareholders' equity}{total market cap}$$
 
-$SP_{ttm}$: sales revenue per market cap  
+$SP_{ttm}$: sales revenue per market cap
+
 $$SP_{ttm} = \frac{revenue_{ttm}}{total market cap}$$
 
 #### 3) Inverted valuation multiples
-PE: price earnings ratio  
+PE: price earnings ratio
+
 $$PE = \frac{total market cap}{net revenue_{ttm}}$$
 
-PB: price book ratio  
+PB: price book ratio
+
 $$PB = \frac{total market cap}{shareholders' equity}$$
 
-PCF: price cash flow ratio  
+PCF: price cash flow ratio
+
 $$PCF = \frac{total market cap}{operating cash flow_{ttm}}$$
 
-PS: price sales ratio  
+PS: price sales ratio
+
 $$PS = \frac{total market cap}{revenue_{ttm}}$$
 
 ### Growth-value alignment
-PEG: price earnings growth. Assign NaN when the growth rate is zero.  
+PEG: price earnings growth. Assign NaN when the growth rate is zero.
+
 $$PEG = \frac{PE}{sales\_g_{ttm}}$$
