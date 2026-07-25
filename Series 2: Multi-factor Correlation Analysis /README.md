@@ -316,5 +316,5 @@ $$\mathit{\text{IC}\underline{}\text{IR}}$$
 
 $\mathit{\text{IC}\underline{\vphantom{I}}\text{IR}}$
 
-
+$\mathit{\text{IC}\underline{}\text{IR}}$
 
