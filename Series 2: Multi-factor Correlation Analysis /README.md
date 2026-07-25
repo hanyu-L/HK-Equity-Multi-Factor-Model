@@ -53,7 +53,7 @@ $$EP_{ttm} = \frac{NetProfit_{ttm}}{MarketCap}$$
 
 $$EPcut_{ttm} = \frac{NetProfit\ Excluding\ Non-recurring\ Items_{TTM}}{Total\ market\ cap}$$
 
-&emsp; 2) Asset-to-price ratios
+&emsp; 2) Asset-to-price ratios  
 &emsp; BP: book value per market cap
 
 $$BP = \frac{shareholders' equity}{total market cap}$$
