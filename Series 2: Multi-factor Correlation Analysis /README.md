@@ -58,14 +58,24 @@ SP_ttm: sales revenue per market cap
 	Inverted valuation multiples
 
 PE：price earnings ratio 
+
 BP =  (total market cap)/〖net revenue〗_ttm 
+
 PB：price book ratio 
-PB =  (total market cap)/(shareholders' equity)
+
+PB =  (total market cap)/(shareholders' equity)  
+
 PCF：price cash flow ratio 
-PCF =  (total market cap)/〖operating cash flow〗_ttm 
+
+PCF =  (total market cap)/〖operating cash flow〗_ttm
+
 PS：price sales ratio
+
 PS =  (total market cap)/〖revenue〗_ttm 
+
 Growth-value alignment
+
 PEG：price earnings growth. Assign NaN when the growth rate is zero.
+
 PEG =  PE/〖sales_g〗_ttm 
 
