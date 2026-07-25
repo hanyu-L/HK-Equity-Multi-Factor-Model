@@ -262,7 +262,43 @@ Given limited data availability, relatively lenient thresholds are adopted for f
 $$|AvgIC| > 0.01,\quad |IC\_IR| > 0.15$$
 
 Surviving effective factors after screening are BP, PB, and gpm_semi_YoY.  
-Factor test results (sorted in descending order of IC_IR):
+Factor test results (sorted in descending order of IC_IR):  
+| factor_name     | avg_IC    | IC_IR    | avg_long_short_ret |
+|----------------|-----------|----------|--------------------|
+| PB             | 0.062149  | 0.401035 | 0.019465           |
+| Profit_G_6m    | 0.015145  | 0.134342 | 0.004217           |
+| open           | 0.005474  | 0.047955 | 0.003314           |
+| low            | 0.005102  | 0.044486 | 0.002874           |
+| high           | 0.003483  | 0.030865 | 0.003287           |
+| Sales_G_6m     | 0.003353  | 0.023682 | 0.006042           |
+| OCF_G_6m       | 0.000477  | 0.004718 | 0.002657           |
+| gpm_semi_YoY   | -0.01823  | -0.15064 | -0.00103           |
+| BP             | -0.06515  | -0.46891 | -0.02186           |
+| volume         | NaN       | NaN      | 0.000407           |
+| month_return   | NaN       | NaN      | 0.000415           |
+| amplitude      | NaN       | NaN      | 0.00453            |
+| turnover_rate  | NaN       | NaN      | -0.01206           |
+| EP_ttm         | NaN       | NaN      | -0.00426           |
+| EPcut_ttm      | NaN       | NaN      | -0.00427           |
+| SP_ttm         | NaN       | NaN      | -0.00635           |
+| PE             | NaN       | NaN      | 0.003626           |
+| PCF            | NaN       | NaN      | 0.007281           |
+| PS             | NaN       | NaN      | 0.014056           |
+| PEG            | NaN       | NaN      | 0.001339           |
+| Sales_G_ttm    | NaN       | NaN      | 0.004828           |
+| Profit_G_ttm   | NaN       | NaN      | 0.00594            |
+| OCF_G_ttm      | NaN       | NaN      | 0.012985           |
+| ROE_G_ttm      | NaN       | NaN      | NaN                |
+| ROE_G_6m       | NaN       | NaN      | NaN                |
+| roe_ttm        | NaN       | NaN      | 0.006677           |
+| roe_6m_YoY     | NaN       | NaN      | NaN                |
+| roa_ttm        | NaN       | NaN      | 0.004257           |
+| roa_YoY        | NaN       | NaN      | NaN                |
+| gpm_ttm        | NaN       | NaN      | 0.007752           |
+| cfo_to_np_ttm  | NaN       | NaN      | 0.002161           |
+| roic_ttm       | NaN       | NaN      | 0.006625           |
+
+
 
 
 
