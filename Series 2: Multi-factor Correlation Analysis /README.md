@@ -84,3 +84,6 @@ PEG: price earnings growth. Assign NaN when the growth rate is zero.
 $$PEG = \frac{PE}{sales\_g_{ttm}}$$
 
 
+
+
+
