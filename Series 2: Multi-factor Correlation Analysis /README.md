@@ -45,8 +45,8 @@ A-shares mandate annual and semi-annual filings with optional quarterly reports,
 3)	The TTM value becomes NaN if the matching prior-period report or prior annual report cannot be located. All financial factors are filled with NaN for stocks lacking any financial disclosures.  
 
 ### Valuation factors
-Earnings-to-price ratios
-〖EP〗_ttm  =  〖NetProfit〗_ttm/MarketCap
+#### Earnings-to-price ratios
+$$EP_{ttm} = \frac{\text{NetProfit}_{ttm}}{\text{MarketCap}}$$
 
 EPcut_ttm: deducted non-recurring earnings per market cap
 〖EPcut〗_ttm  =  〖Net Profit Excluding Non-recurring Items〗_TTM/(Total market_cap)
