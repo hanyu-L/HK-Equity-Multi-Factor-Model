@@ -185,14 +185,32 @@ $$gpm\_semi\_YoY = \left(\frac{GrossProfit_{current}}{OperatingRevenue_{current}
 
 
 
+### 2.2 Price-volume factors
+To align with the monthly static cross-sections used for TTM financial factor construction and facilitate subsequent factor merging, only data observed on the last trading day of each month is adopted for price-volume factor calculation.  
+This approach reduces data volume, shortens computation runtime and streamlines the dataset. The trade-off is the loss of daily granularity. In practical terms, only static price-volume metrics independent of daily historical series can be constructed; momentum, multi-period rolling turnover, idiosyncratic volatility and other indicators requiring continuous daily records are not feasible.  
+As only end-of-month cross-sectional data — including the month-end open, close, high, low prices, aggregate monthly trading volume and month-end market capitalisation — is available, historical daily sequences spanning the prior 1, 3 or 6 months cannot be retrieved. Accordingly, only three simple static factors are constructed.  
+Month return
 
+$$month\ return = \frac{close}{open} - 1$$
 
+Amplitude
 
+$$amplitude = \frac{high - low}{open} - 1$$
 
+Turnover rate
 
+$$turnover\ rate = \frac{turnover}{market\ cap}$$
 
+### 2.3 Factor preprocessing and neutralisation
+Considering the traits of Hong Kong stock market, penny stocks and illiquid securities are excluded to prevent distorted empirical results driven by illiquid outliers.  
+After filtering, all candidate factors within the sample pool undergo preprocessing following the sequence below.  
 
+#### 2.3.1 MAD-based 5σ winsorisation
+We adopt median absolute deviation (MAD) winsorisation with threshold set at 5 times the MAD. Factor values exceeding the upper and lower bounds are truncated to the corresponding boundary levels. If the MAD of a factor equals zero, the original series is retained without adjustment.
 
+$$lower = median - 5 \times mad$$
+
+$$upper = median + 5 \times mad$$
 
 
 
