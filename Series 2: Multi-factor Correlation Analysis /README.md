@@ -239,7 +239,7 @@ Full-period average IC:
 
 $$AvgIC = \frac{1}{N}\sum_{t=1}^{N} IC_{t}$$
 
-Metric interpretation:
+Metric interpretation:  
 &emsp; If "AvgIC "> 0: Higher factor values correspond to stronger stock returns in the following month, signifying a positive stock-selection factor.  
 &emsp; If "AvgIC "< 0: Lower factor values predict higher returns over the next month, representing an inverted stock-selection factor.  
 A larger absolute value of $AvgIC indicates a stronger linear association between the factor and future returns, translating to more robust predictive power for individual monthly cross-sections.  
