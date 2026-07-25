@@ -46,31 +46,31 @@ A-shares mandate annual and semi-annual filings with optional quarterly reports,
 
 ### Valuation factors
 #### 1) Earnings-to-price ratios
-$$EP_{ttm} = \frac{NetProfit_{ttm}}{MarketCap}$$
+$EP_{ttm} = \frac{NetProfit_{ttm}}{MarketCap}$
 
 $EPcut_{ttm}$: deducted non-recurring earnings per market cap
-$$EPcut_{ttm} = \frac{Net Profit Excluding Non-recurring Items_{TTM}}{Total market\_cap}$$
+$EPcut_{ttm} = \frac{NetProfit Excluding Non-recurring Items_{TTM}}{Total market\_cap}$
 
 #### 2) Asset-to-price ratios
 BP: book value per market cap
-$$BP = \frac{shareholders' equity}{total market cap}$$
+$BP = \frac{shareholders' equity}{total market cap}$
 
 $SP_{ttm}$: sales revenue per market cap
-$$SP_{ttm} = \frac{revenue_{ttm}}{total market cap}$$
+$SP_{ttm} = \frac{revenue_{ttm}}{total market cap}$
 
 #### 3) Inverted valuation multiples
 PE: price earnings ratio
-$$PE = \frac{total market cap}{net revenue_{ttm}}$$
+$PE = \frac{total market cap}{net revenue_{ttm}}$
 
 PB: price book ratio
-$$PB = \frac{total market cap}{shareholders' equity}$$
+$PB = \frac{total market cap}{shareholders' equity}$
 
 PCF: price cash flow ratio
-$$PCF = \frac{total market cap}{operating cash flow_{ttm}}$$
+$PCF = \frac{total market cap}{operating cash flow_{ttm}}$
 
 PS: price sales ratio
-$$PS = \frac{total market cap}{revenue_{ttm}}$$
+$PS = \frac{total market cap}{revenue_{ttm}}$
 
 ### Growth-value alignment
 PEG: price earnings growth. Assign NaN when the growth rate is zero.
-$$PEG = \frac{PE}{sales\_g_{ttm}}$$
+$PEG = \frac{PE}{sales\_g_{ttm}}$
