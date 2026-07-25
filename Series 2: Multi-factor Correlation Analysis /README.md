@@ -263,6 +263,11 @@ $$|AvgIC| > 0.01,\quad |IC\_IR| > 0.15$$
 
 Surviving effective factors after screening are BP, PB, and gpm_semi_YoY.  
 Factor test results (sorted in descending order of IC_IR):  
+
+ <div align="center">
+</div>
+ <div align="center">
+   
 | factor_name     | avg_IC    | IC_IR    | avg_long_short_ret |
 |----------------|-----------|----------|--------------------|
 | PB             | 0.062149  | 0.401035 | 0.019465           |
@@ -298,7 +303,7 @@ Factor test results (sorted in descending order of IC_IR):
 | cfo_to_np_ttm  | NaN       | NaN      | 0.002161           |
 | roic_ttm       | NaN       | NaN      | 0.006625           |
 
-
+</div>
 
 
 
