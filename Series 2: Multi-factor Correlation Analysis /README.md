@@ -41,7 +41,8 @@ Special care is required for date conversion. Original timestamps exist as 8-dig
 ### Monthly cross-sectional financial factor calculation
 A-shares mandate annual and semi-annual filings with optional quarterly reports, whereas Hong Kong-listed issuers are not required to release semi-annual statements and follow heterogeneous disclosure schedules. A hierarchical rule set is applied to compute TTM figures:
 &emsp; 1) When only an annual report is available for the current period, TTM is derived directly from this full-year data.  
-&emsp; 2) When a semi-annual or quarterly report is disclosed, the 12-month rolling metric is reconstructed via: Last full-year figure − same-period figure from last year + current single-period result. Matching historical filings of the identical category and the prior full-year annual report is mandatory.  
+&emsp; 2) When a semi-annual or quarterly report is disclosed, the 12-month rolling metric is reconstructed via: Last full-year figure − same-period figure from last year + current single-period result. Matching historical filings of the identical category and the prior full-year   
+          annual report is mandatory.  
 &emsp; 3) The TTM value becomes NaN if the matching prior-period report or prior annual report cannot be located. All financial factors are filled with NaN for stocks lacking any financial disclosures.  
 
 #### Valuation factors
