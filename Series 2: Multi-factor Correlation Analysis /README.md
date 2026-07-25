@@ -3,31 +3,31 @@
 
 ## Table of Contents
 
-1. Data ingestion
-2. Factor construction
-2.1 Financial factors
-Monthly cross-sectional financial factor calculation
-Valuation factors
-Growth factors
-Profitability quality factors
-Selected computational results
-2.2 Price-volume factors
-2.3 Factor preprocessing and neutralisation
-2.3.1 MAD-based 5σ winsorisation
-2.3.2 Cross-sectional Z-score standardisation
-2.3.3 Missing value imputation after standardisation
-2.3.4 Sector neutralisation and market capitalisation
-3.  Single factor testing framework
-3.1 Single factor testing framework
-3.1.1 Information Coefficient (Pearson Correlation Coefficient)
-3.2.2 IC Information Ratio (IC_IR)
-3.1.3 Quintile long-short returns
-3.2 Single-factor screening results
-4.  Correlation and multicollinearity of surviving factors
-4.1 Correlation testing methodology
-4.2 Correlation matrix analysis
-4.3 Multicollinearity
-4.4 Correlation analysis and factor combination
+1. Data ingestion  
+2. Factor construction  
+2.1 Financial factors  
+Monthly cross-sectional financial factor calculation  
+Valuation factors  
+Growth factors  
+Profitability quality factors  
+Selected computational results  
+2.2 Price-volume factors  
+2.3 Factor preprocessing and neutralisation  
+2.3.1 MAD-based 5σ winsorisation  
+2.3.2 Cross-sectional Z-score standardisation  
+2.3.3 Missing value imputation after standardisation  
+2.3.4 Sector neutralisation and market capitalisation  
+3.  Single factor testing framework  
+3.1 Single factor testing framework  
+3.1.1 Information Coefficient (Pearson Correlation Coefficient)  
+3.2.2 IC Information Ratio (IC_IR)  
+3.1.3 Quintile long-short returns  
+3.2 Single-factor screening results  
+4.  Correlation and multicollinearity of surviving factors  
+4.1 Correlation testing methodology  
+4.2 Correlation matrix analysis  
+4.3 Multicollinearity  
+4.4 Correlation analysis and factor combination  
 
 ## 1. Data ingestion
 The dataset contains 440 stocks, covering the period from January 2019 to December 2025, with a total of 1,755 independent monthly cross-sections.
