@@ -112,22 +112,26 @@ ROE_G_ttm: TTM ROE year-on-year growth
 $$ROE\_G_{ttm} = \frac{roe_{ttm,current}}{roe_{\mathit{ttm,last\_year}}} - 1$$
 
 
------
-## Sales_G_ttm: TTM sales year-on-year growth
+-----服了 一直改不好
 
-$Sales\_G_{ttm} = \dfrac{rev_{ttm,\mathrm{current}}}{rev_{ttm,\mathrm{last\_year}}} - 1$
 
-## Profit_G_ttm: TTM net profit year-on-year growth
+#### 2） 	Semi-annual single-period YoY growth
+This calculation applies exclusively to semi-annual and quarterly filings. Metrics are computed by matching financial statements of the identical reporting frequency from the previous year to derive year-on-year growth for single-period operating indicators and single-period ROE. Observations based on annual reports contain no semi-annual comparative data and are uniformly assigned np.nan.
 
-$Profit\_G_{ttm} = \dfrac{net\_profit_{ttm,\mathrm{current}}}{net\_profit_{ttm,\mathrm{last\_year}}} - 1$
+Sale_G_6m: semi-annual sales year-on-year growth
 
-## OCF_G_ttm: TTM operating cash flow YoY growth
+$$Sale\_G_{6m} = \frac{Operating\ revenue_{current}}{Operating\ revenue_{last\_year}} - 1$$
 
-$OCF\_G_{ttm} = \dfrac{ocf_{ttm,\mathrm{current}}}{ocf_{ttm,\mathrm{last\_year}}} - 1$
+Profit_G_6m: semi-annual net profit year-on-year growth
 
-## ROE_G_ttm: TTM ROE year-on-year growth
+$$Profit\_G_{6m} = \frac{Profit\ attributable\ to\ equity\ holders_{current}}{Profit\ attributable\ to\ equity\ holders_{last\_year}} - 1$$
 
-$ROE\_G_{ttm} = \dfrac{roe_{ttm,\mathrm{current}}}{roe_{ttm,\mathrm{last\_year}}} - 1$
+OCF_G_6m: semi-annual operating cash flow YoY Growth
 
+$$OCF\_G_{6m} = \frac{netcash\ operate_{current}}{netcash\ operate_{last\_year}} - 1$$
+
+ROE_G_6m: semi-annual ROE year-on-year growth
+
+$$ROE\_G_{6m} = \frac{roe\ 6m\_YoY_{current}}{roe\ 6m\_YoY_{last\_year}} - 1$$
 
 
