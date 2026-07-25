@@ -113,3 +113,22 @@ $$ROE\_G_{ttm} = \frac{roe_{ttm,current}}{roe_{{ttm,last\_year}}} - 1$$
 
 
 
+
+w------------  
+
+
+Sales_G_ttm: TTM sales year-on-year growth
+
+$$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{ttm,lastyear}} - 1$$
+
+Profit_G_ttm: TTM net profit year-on-year growth
+
+$$Profit\_G_{ttm} = \frac{net\_profit_{ttm,current}}{net\_profit_{ttm,lastyear}} - 1$$
+
+OCF_G_ttm: TTM operating cash flow YoY growth
+
+$$OCF\_G_{ttm} = \frac{ocf_{ttm,current}}{ocf_{ttm,lastyear}} - 1$$
+
+ROE_G_ttm: TTM ROE year-on-year growth
+
+$$ROE\_G_{ttm} = \frac{roe_{ttm,current}}{roe_{ttm,lastyear}} - 1$$
