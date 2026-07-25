@@ -90,7 +90,7 @@ General formula:
 
 $$G_{ttm} = \frac{X_{ttm,current}}{X_{{ttm,last\_year}}} - 1$$
 
-$X_{ttm,current}$ = current-period trailing 12-month metric derived from financial statements。
+$X_{ttm,current}$ = current-period trailing 12-month metric derived from financial statements  
 $X_{{ttm,last\_year}}$ = trailing 12-month metric recorded at the identical fiscal closing date of the prior year.  
 
 If the prior-year TTM value is missing or equals zero, the factor is assigned np.nan.
