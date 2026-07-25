@@ -96,17 +96,20 @@ $$G_{ttm} = \frac{X_{ttm,current}}{X_{{ttm,last\_year}}} - 1$$
 
 &emsp; If the prior-year TTM value is missing or equals zero, the factor is assigned np.nan.
 -------------------开始有问题  
+
 &emsp; Sales_G_ttm: TTM sales year-on-year growth
 
 $$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{\mathit{ttm,last\_year}}} - 1$$
 
-$$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{ttm,lastyear}} - 1$$
+Sales_G_ttm: TTM sales year-on-year growth
 
 $$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{ttm,last-year}} - 1$$
 
 Sales_G_ttm: TTM sales year-on-year growth
 
-$$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{ttm,last-year}} - 1$$
+$$Sales\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{ttm,last\_year}} - 1$$
+
+
 
 &emsp; Profit_G_ttm: TTM net profit year-on-year growth
 
