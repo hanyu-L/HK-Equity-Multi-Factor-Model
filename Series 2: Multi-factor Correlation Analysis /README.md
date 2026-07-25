@@ -212,9 +212,57 @@ $$lower = median - 5 \times mad$$
 
 $$upper = median + 5 \times mad$$
 
+#### 2.3.2 Cross-sectional Z-score standardisation
+Monthly cross-sectional Z-score standardisation is applied to eliminate dimensional disparities across different factors.
 
+$$z = \frac{factor - mean(factor)}{std(factor)}$$
 
+#### 2.3.3 Missing value imputation after standardisation  
+After winsorisation and standardisation for all factors across every monthly cross-section, missing observations are filled with the cross-sectional average of the corresponding factor within the month.
 
+#### 2.3.4 Sector neutralisation and market capitalisation  
+A monthly cross-sectional WLS regression is estimated using standardised factors as the dependent variable, where sector dummy variables and the logarithm of total market capitalisation act as independent variables. Each stock is weighted by its month-end total market capitalisation.  The neutralised factor corresponds to the regression residual.  
+
+$$factor = \alpha + \sum \beta_i \cdot ind_{i} + \gamma \cdot ln(market\ cap) + \varepsilon$$
+
+## 3.  Single factor testing framework  
+### 3.1 Single factor testing framework  
+Can refer to my series 1: Single factor testing framework, section 5 https://github.com/hanyu-L/Single-Factor-Testing-Framework/tree/main/Series%201%3A%20Single-Factor-Testing-Framework 
+
+#### 3.1.1 Information Coefficient (Pearson Correlation Coefficient)
+The IC is defined as the Pearson correlation between standardised factor values on the monthly cross-section and each stock’s forward excess return over the subsequent month. It gauges the directional sign and linear strength of the factor’s return predictability.
+
+$$IC_{t} = Corr(F_{i,t}, R_{i,t+1})$$
+
+where F_idenotes the factor value of stock i on the current-month cross-section, and R_(i,t+1) represents the corresponding stock’s forward return in the subsequent period.  
+Full-period average IC:
+
+$$AvgIC = \frac{1}{N}\sum_{t=1}^{N} IC_{t}$$
+
+Metric interpretation:
+&emsp; If "AvgIC "> 0: Higher factor values correspond to stronger stock returns in the following month, signifying a positive stock-selection factor.  
+&emsp; If "AvgIC "< 0: Lower factor values predict higher returns over the next month, representing an inverted stock-selection factor.  
+A larger absolute value of $AvgIC indicates a stronger linear association between the factor and future returns, translating to more robust predictive power for individual monthly cross-sections.  
+
+#### 3.2.2 IC Information Ratio (IC_IR)
+IC_IR  evaluates how consistently a factor predicts returns over time and gauges the persistence of excess return forecasts.
+
+$$ICIR = \frac{AvgIC}{Std(IC_{t})}$$
+
+Std(IC_{t}) denotes the standard deviation of monthly IC series across the full sample period, capturing monthly fluctuations in the factor’s predictive power.  
+A higher absolute value of IC_IR indicates more stable predictive performance and lower noise embedded in the factor.  
+
+#### 3.1.3 Quintile long-short returns
+On each monthly cross-section, factors are sorted by rank and partitioned into five groups (q=5). Monthly average returns are computed for each quintile.  
+Monthly long-short portfolio return is defined as the return of Quintile 5 minus the return of Quintile 1. This metric tests the monotonic return pattern across factor quantiles and assesses the factor’s capacity to capture excess returns.  
+
+### 3.2 Single-factor screening results
+Given limited data availability, relatively lenient thresholds are adopted for factor selection:
+
+$$|AvgIC| > 0.01,\quad |IC\_IR| > 0.15$$
+
+Surviving effective factors after screening are BP, PB, and gpm_semi_YoY.  
+Factor test results (sorted in descending order of IC_IR):
 
 
 
