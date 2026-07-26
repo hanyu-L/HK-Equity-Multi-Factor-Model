@@ -72,6 +72,14 @@ The maximum IC weighting method originates from Qian’s Quantitative Equity Por
 
 $$\max \mathit{IC} = \frac{\vec{w}^{\,T}\cdot \overrightarrow{\mathit{IC}}_{\perp}}{\sqrt{\vec{w}^{\,T} \mathit{V} \vec{w}}}$$
 
+---
+
+$\overrightarrow{\mathit{IC}}\perp$
+
+$$\max \mathit{IC} = \frac{\vec{w}^{\,T} \cdot \overrightarrow{\mathit{IC}}\perp}{\sqrt{\vec{w}^{\,T} \mathit{V} \vec{w}}}$$
+
+---
+
 where $\vec{w}$ denotes the factor weight vector, \$\overrightarrow{IC}_{\perp}$ stands for the vector of average factor IC values, and V represents the cross-sectional correlation matrix of factors. Given that all factors are standardized in advance, the correlation matrix is equivalent to the covariance matrix.  
 To ensure sound economic interpretation and prevent short positions on raw factors, non-negativity constraints are imposed on weights:
 
