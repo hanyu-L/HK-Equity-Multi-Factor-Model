@@ -31,7 +31,13 @@ Selected computational results
 
 ## 1. Data ingestion
 The dataset contains 440 stocks, covering the period from January 2019 to December 2025, with a total of 1,755 independent monthly cross-sections.
-Industries included are IT & Internet, Financials, Real Estate, Consumer, Healthcare, Energy & Industrials and Utilities & Telecom.
+Industries included are IT & Internet, Financials, Real Estate, Consumer, Healthcare, Energy & Industrials and Utilities & Telecom.  
+Input dataset: 
+&emsp; 1) hk_cashflow.csv  
+&emsp; 2) hk_income.csv  
+&emsp; 3) hk_balancesheet.csv  
+&emsp; 4) hk_indicator.csv  
+&emsp; 5) hsi_return.csv
 
 ## 2. Factor construction
 ### 2.1 Financial factors
