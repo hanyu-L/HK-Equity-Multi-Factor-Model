@@ -133,25 +133,26 @@ $$ROEG_{6m} = \frac{roe6m_{current}}{roe6m_{lastyear}} - 1$$
 
 #### Profitability quality factors  
 &emsp; 1) Annualised TTM profitability metrics
-$roe_{ttm}$: return on equity TTM
 
-$$roe_{ttm} = \frac{net\_profit_{ttm}}{total\ equity\ avg}$$
+&emsp; $roe_{ttm}$: return on equity TTM
+
+$$roe_{ttm} = \frac{netprofit_{ttm}}{totalequity_{avg}}$$
 
 &emsp; $roa_{ttm}$: return on assets TTM 
 
-$$roa_{ttm} = \frac{net\_profit_{ttm}}{total\ asset\ avg}$$
+$$roa_{ttm} = \frac{netprofit_{ttm}}{totalasset_{avg}}$$
 
 &emsp; $gpm_{ttm}$: gross profit margin TTM
 
-$$gpm_{ttm} = \frac{gross\_profit_{ttm}}{rev_{ttm}}$$
+$$gpm_{ttm} = \frac{grossprofit_{ttm}}{rev_{ttm}}$$
 
-&emsp; $cfo\_to\_np_{ttm}$: cash flow to net profit TTM
+&emsp; $cfoToNp_{ttm}$: cash flow to net profit TTM
 
-$$cfo\_to\_np_{ttm} = \frac{ocf_{ttm}}{net\_profit_{ttm}}$$
+$$cfoToNp_{ttm} = \frac{ocf_{ttm}}{netprofit_{ttm}}$$
 
 &emsp; $roic_{ttm}$: return on invested capital TTM
 
-$$roic_{ttm} = \frac{ebit_{ttm}}{invest\_cap_{ttm}}$$
+$$roic_{ttm} = \frac{ebit_{ttm}}{investcap_{ttm}}$$
 
 &emsp; 2) Semi-annual YoY quality growth metrics  
 &emsp;    General formula for year-on-year growth:
