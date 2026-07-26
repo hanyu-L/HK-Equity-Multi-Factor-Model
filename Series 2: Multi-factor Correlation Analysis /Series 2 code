@@ -1,1 +1,24 @@
+import pandas as pd
+import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
+
+# ====================== 1. Data ingestion ======================
+df_income = pd.read_csv("hk_income.csv")
+df_balance = pd.read_csv("hk_balancesheet.csv")
+df_cashflow = pd.read_csv("hk_cashflow.csv")
+df_indicator = pd.read_csv("hk_indicator.csv")
+
+# 统一转换财报日期end_date为datetime格式，所有表共用列名end_date
+finance_df_list = [df_income, df_balance, df_cashflow, df_indicator]
+for df in finance_df_list:
+    df["end_date"] = pd.to_datetime(df["end_date"], errors="coerce")
+
+# 财务指标表单独转换披露日期std_report_date
+df_indicator["std_report_date"] = pd.to_datetime(df_indicator["std_report_date"], errors="coerce")
+
+Factor construction
+2.1 Financial factors
+
+
 
