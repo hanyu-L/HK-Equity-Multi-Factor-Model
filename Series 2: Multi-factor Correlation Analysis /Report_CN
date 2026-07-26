@@ -1,37 +1,9 @@
 # 多因子相关性分析
 440只股票，时间范围2019年1月1日 - 2025年12月31日，共1755个独立月度截面。
 
-## 目录
-
-1. 数据库  
-2. 因子构建  
-2.1 财务因子  
-计算月度截面财务因子  
-估值因子  
-成长因子  
-财务质量因子  
-计算结果  
-2.2 量价因子  
-2.3 因子预处理与中性化过程  
-2.3.1 MAD 5 倍中位数去极值  
-2.3.2 横截面 Z-score 标准化  
-2.3.3 标准化后缺失值填充  
-2.3.4 行业中性化与市值中性化  
-3. 因子有效性检验  
-3.1 单因子检验体系  
-3.1.1 信息系数IC（Pearson相关系数）  
-3.2.2 信息比率IC_IR  
-3.1.3 五分位分层多空收益  
-3.2 单因子筛选结果  
-4.  有效因子相关性与共线性  
-4.1 相关性检验原理  
-4.2 相关系数矩阵分析  
-4.3 多重共线性  
-4.4 相关性分析与因子合成  
-
-## 1. Data ingestion
-The dataset contains 440 stocks, covering the period from January 2019 to December 2025, with a total of 1,755 independent monthly cross-sections.
-Industries included are IT & Internet, Financials, Real Estate, Consumer, Healthcare, Energy & Industrials and Utilities & Telecom.  
+## 1.  数据库
+股票总数：440 只，时间范围2019.1 – 2025.12，独立月度截面总数：1755 个
+涉及行业：IT & Internet，Financials，Real Estate，Consumer，Healthcare，Energy & Industrials，Utilities & Telecom  
 Input dataset:  
 &emsp; 1) hk_cashflow.csv  
 &emsp; 2) hk_income.csv  
@@ -39,16 +11,18 @@ Input dataset:
 &emsp; 4) hk_indicator.csv  
 &emsp; 5) hsi_return.csv
 
-## 2. Factor construction
-### 2.1 Financial factors
-Given uneven disclosure schedules and variable reporting lags for Hong Kong market financial data, this study applies a Point-In-Time (PIT) mechanism (implemented by the get_latest_disclosed_fin function) to avoid look-ahead bias. Rebalancing is anchored to the final trading day each month. Only financial reports disclosed on or prior to this cut-off date enter factor calculations. We explicitly separate the fiscal period end date (end_date) and formal disclosure date (std_report_date) to guarantee accurate time matching.
-Special care is required for date conversion. Original timestamps exist as 8-digit numeric strings such as 20190630. Invoking pd.to_datetime directly misreads these values as Unix timestamps referenced to 1970. The resulting temporal mismatch impairs rolling 12-month lookups of historical financial data and produces NaNs for TTM indicators. All date columns must first be converted to strings and parsed using format="%Y%m%d".
+## 2. 因子构建
+### 2.1 财务因子
+因为港股财报披露时间点和滞后周期不统一，为规避前瞻性偏差（look-ahead bias），本文采用PIT（Point-In-Time）机制（即get_latest_disclosed_fin函数），以每月月末最后一个交易日作为统一调仓截面，仅选用披露日早于或等于截面日的财报参与因子计算；特别区分「财报账面截止日 end_date」和「财报对外披露日 std_report_date」，保证时间对齐。  
+这里需要注意的是时间转换问题，如果原始数据的时间字段是8位数字字符串（如20190630），直接使用pd.to_datetime会偏移至 1970 年，从而导致后续12个月滚动窗口无法匹配往期财报，导致TTM指标计算结果为NA。必须先将日期字段转为字符串，并指定format="%Y%m%d"。
 
-### Monthly cross-sectional financial factor calculation
-A-shares mandate annual and semi-annual filings with optional quarterly reports, whereas Hong Kong-listed issuers are not required to release semi-annual statements and follow heterogeneous disclosure schedules. A hierarchical rule set is applied to compute TTM figures:
-&emsp; 1) When only an annual report is available for the current period, TTM is derived directly from this full-year data.  
-&emsp; 2) When a semi-annual or quarterly report is disclosed, the 12-month rolling metric is reconstructed via: Last full-year figure − same-period figure from last year + current single-period result. Matching historical filings of the identical category and the prior full-year annual report is mandatory.  
-&emsp; 3) The TTM value becomes NaN if the matching prior-period report or prior annual report cannot be located. All financial factors are filled with NaN for stocks lacking any financial disclosures.  
+### 计算月度截面财务因子
+计算月度截面财务因子
+和A股强制披露年报、半年报和选择性披露季报不同，港股无强制半年报要求，并且披露时间不统一，所以必须分层判断：
+&emsp; 1)	如果仅当期披露年报：用单期全年数据做 TTM；   
+&emsp; 2)	如果当期有披露半年报 / 季报：必须同时匹配去年同期同类型财报+去年全年年报，用「去年全年 - 去年同期 + 本期单期」还原完整 12 个月；  
+&emsp; 3)	如果缺去年同期或去年年报任一，TTM 直接填充 NaN，换句话说，若股票无任何披露财报，全部财务因子填NaN。  
+
 
 #### Valuation factors
 &emsp; 1) Earnings-to-price ratios
