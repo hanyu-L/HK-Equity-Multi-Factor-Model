@@ -95,9 +95,9 @@ Nevertheless, this approach bears notable limitations. Optimal weights are solve
 ### 1.7 Maximization of IC_IR Weighting
 The maximum "IC_IR"  weighting method originates also from Qian’s Quantitative Equity Portfolio Management. Its core idea is to estimate the average IC and volatility of the composite factor using historical time-series IC values, and solve for a weight vector to maximize the composite factor’s "IC_IR" . The optimization objective is defined as:  
 
-$$\max \mathit{IC}_{IR} = \frac{\vec{w}^{\,T}\cdot \overrightarrow{\mathit{IC}}_{\perp}}{\sqrt{\vec{w}^{\,T} \Sigma \vec{w}}}$$
+$$\max \mathit{IC}_{IR} = \frac{\vec{w}^{\,T} \cdot \overrightarrow{\mathit{IC}}}{\sqrt{\vec{w}^{\,T} \Sigma \vec{w}}}$$
 
-where $\vec{w} denotes the factor weight vector, $\overrightarrow{\mathit{IC}}_{\perp}$ is the vector of full-sample average IC for each factor, and Σ represents the time-series covariance matrix of factor IC. To avoid negative weights and ensure economically meaningful factor interpretation, constrained optimization is implemented with the following restrictions:
+where $\vec{w} denotes the factor weight vector, $\overrightarrow{IC}$ is the vector of full-sample average IC for each factor, and Σ represents the time-series covariance matrix of factor IC. To avoid negative weights and ensure economically meaningful factor interpretation, constrained optimization is implemented with the following restrictions:
 
 $$
 \begin{aligned}
