@@ -115,24 +115,6 @@ $$ROEG_{ttm} = \frac{roe_{ttm,current}}{roe_{ttm,lastyear}} - 1$$
 &emsp; 2) Semi-annual single-period YoY growth
 &emsp; This calculation applies exclusively to semi-annual and quarterly filings. Metrics are computed by matching financial statements of the identical reporting frequency from the previous year to derive year-on-year growth for single-period operating indicators and single-period ROE. Observations based on annual reports contain no semi-annual comparative data and are uniformly assigned np.nan.
 
-&emsp; Sale_G_6m: semi-annual sales year-on-year growth
-
-$$Sale\_G_{6m} = \frac{Operating\ revenue_{current}}{Operating\ revenue_{last\_year}} - 1$$
-
-&emsp; Profit_G_6m: semi-annual net profit year-on-year growth
-
-$$Profit\_G_{6m} = \frac{Profit\ attributable\ to\ equity\ holders_{current}}{Profit\ attributable\ to\ equity\ holders_{last\_year}} - 1$$
-
-&emsp; OCF_G_6m: semi-annual operating cash flow YoY Growth
-
-$$OCF\_G_{6m} = \frac{netcash\ operate_{current}}{netcash\ operate_{last\_year}} - 1$$
-
-&emsp; ROE_G_6m: semi-annual ROE year-on-year growth
-
-$$ROE\_G_{6m} = \frac{roe\ 6m\_YoY_{current}}{roe\ 6m\_YoY_{last\_year}} - 1$$
-
----
-
 &emsp; $SalesG_{6m}$: semi-annual sales year-on-year growth
 
 $$SalesG_{6m} = \frac{operating\_revenue_{current}}{operating\_revenue_{lastyear}} - 1$$
@@ -148,8 +130,6 @@ $$OCFG_{6m} = \frac{netcashoperate_{current}}{netcashoperate_{lastyear}} - 1$$
 &emsp; $ROEG_{6m}$: semi-annual ROE year-on-year growth
 
 $$ROEG_{6m} = \frac{roe6m_{current}}{roe6m_{lastyear}} - 1$$
-
----
 
 #### Profitability quality factors  
 &emsp; 1) Annualised TTM profitability metrics
