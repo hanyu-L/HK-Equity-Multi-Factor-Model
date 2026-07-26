@@ -45,8 +45,8 @@ Result analysis:
 The composite factor constructed via dynamic IC_IR weighting with a 24-month half-life fails to deliver satisfactory performance. Backtesting shows that the composite factor achieves an average IC of −0.0039, an "IC_IR"  of −0.0307, and a monthly average quintile long-short portfolio return of 0.0004 over the full sample period, indicating its inability to generate persistent excess returns.  
 
 ### 1.4 Principal Component Analysis (PCA) Method  
-Principal Component Analysis (PCA), proposed by Pearson in 1901, is a widely adopted unsupervised dimensionality reduction technique. PCA projects a set of highly correlated N-dimensional factors onto a new k-dimensional coordinate system where k<N. The resulting k orthogonal features are termed principal components, which are mutually uncorrelated, enabling dimensionality reduction and removal of redundant information. Consider a factor matrix (x_1,x_2,…,x_N )_(T×N) consisting of N factors, where each x_i denotes a T-dimensional column vector. The implementation steps are outlined as follows:  
-&emsp; 1) Standardise the raw factor matrix;
+Principal Component Analysis (PCA), proposed by Pearson in 1901, is a widely adopted unsupervised dimensionality reduction technique. PCA projects a set of highly correlated N-dimensional factors onto a new k-dimensional coordinate system where k<N. The resulting k orthogonal features are termed principal components, which are mutually uncorrelated, enabling dimensionality reduction and removal of redundant information. Consider a factor matrix $$(\mathit{x}_{1},\mathit{x}_{2},\dots,\mathit{x}_{N})_{\mathit{T}\times \mathit{N}}$$ consisting of N factors, where each x_i denotes a T-dimensional column vector. The implementation steps are outlined as follows:  
+&emsp; 1) Standardise the raw factor matrix;  
 &emsp; 2) Compute the covariance matrix of factors and derive its corresponding eigenvalues and eigenvectors  
 &emsp; 3) Sort eigenvalues in descending order and select the first k principal components whose cumulative explained variance ratio exceeds 85%  
 &emsp; 4) Weight the selected principal components by their respective variance explained ratios and aggregate them linearly to construct the global PCA composite factor  
@@ -72,7 +72,7 @@ The maximum IC weighting method originates from Qian’s Quantitative Equity Por
 
 $$\max \mathit{IC} = \frac{\vec{w}^{\,T}\cdot \overrightarrow{\mathit{IC}}_{\perp}}{\sqrt{\vec{w}^{\,T} \mathit{V} \vec{w}}}$$
 
-where $\vec{w} denotes the factor weight vector, \quad \overrightarrow{IC}_{\perp}$ stands for the vector of average factor IC values, and V represents the cross-sectional correlation matrix of factors. Given that all factors are standardized in advance, the correlation matrix is equivalent to the covariance matrix.  
+where $\vec{w}$ denotes the factor weight vector, \quad \overrightarrow{IC}_{\perp}$ stands for the vector of average factor IC values, and V represents the cross-sectional correlation matrix of factors. Given that all factors are standardized in advance, the correlation matrix is equivalent to the covariance matrix.  
 To ensure sound economic interpretation and prevent short positions on raw factors, non-negativity constraints are imposed on weights:
 
 $$
@@ -97,7 +97,7 @@ The maximum "IC_IR"  weighting method originates also from Qian’s Quantitative
 
 $$\max \mathit{IC}_{IR} = \frac{\vec{w}^{\,T}\cdot \overrightarrow{\mathit{IC}}_{\perp}}{\sqrt{\vec{w}^{\,T} \Sigma \vec{w}}}$$
 
-where $\vec{w} denotes the factor weight vector, \quad \overrightarrow{IC}_{\perp}$ is the vector of full-sample average IC for each factor, and Σ represents the time-series covariance matrix of factor IC. To avoid negative weights and ensure economically meaningful factor interpretation, constrained optimization is implemented with the following restrictions:
+where $\vec{w} denotes the factor weight vector, $\overrightarrow{\mathit{IC}}_{\perp}$ is the vector of full-sample average IC for each factor, and Σ represents the time-series covariance matrix of factor IC. To avoid negative weights and ensure economically meaningful factor interpretation, constrained optimization is implemented with the following restrictions:
 
 $$
 \begin{aligned}
