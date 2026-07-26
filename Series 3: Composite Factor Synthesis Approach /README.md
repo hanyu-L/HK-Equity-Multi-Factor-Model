@@ -1,5 +1,5 @@
 # Composite Factor Synthesis Approach  
-Following the prior research series 2, this report performs factor synthesis based on pre-processed factors.
+Following the prior series 2, this report performs factor synthesis based on pre-processed factors.
 
 1. Methodology Design  
 1.1 Equal-weighted Synthesis  
