@@ -80,22 +80,7 @@ $$\max IC = \frac{\vec{w}^{\,T} \cdot \overrightarrow{IC}}{\sqrt{\vec{w}^{\,T} V
 
 --
 
-$\overrightarrow{\mathit{IC}}$
-
-$$\max \mathit{IC} = \frac{\vec{w}^{\,T} \cdot \overrightarrow{\mathit{IC}}}{\sqrt{\vec{w}^{\,T} \mathit{V} \vec{w}}}$$
-
---
-
-$$
-\begin{aligned}
-\max \quad & \mathit{IC} \\
-\text{s.t.} \quad & \vec{w} \ge 0 \\
-& \sum w_i = 1
-\end{aligned}
-
----
-
-where $\vec{w}$ denotes the factor weight vector, \$\overrightarrow{IC}_{\perp}$ stands for the vector of average factor IC values, and V represents the cross-sectional correlation matrix of factors. Given that all factors are standardized in advance, the correlation matrix is equivalent to the covariance matrix.  
+where $\vec{w}$ denotes the factor weight vector, $\overrightarrow{IC}$ stands for the vector of average factor IC values, and V represents the cross-sectional correlation matrix of factors. Given that all factors are standardized in advance, the correlation matrix is equivalent to the covariance matrix.  
 To ensure sound economic interpretation and prevent short positions on raw factors, non-negativity constraints are imposed on weights:
 
 $$
