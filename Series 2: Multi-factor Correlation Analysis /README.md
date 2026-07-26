@@ -117,22 +117,40 @@ $$ROE\_G_{ttm} = \frac{roe_{ttm,current}}{roe_{\mathit{ttm,last\_year}}} - 1$$
 
 ---
 
-&emsp; $\text{Sales}\underline{}\text{G}_{ttm}$: TTM sales year-on-year growth
+&emsp; $SalesG_{ttm}$: TTM sales year-on-year growth
 
-$$\text{Sales}\underline{}\text{G}_{ttm} = \frac{rev_{ttm,\text{current}}}{rev_{ttm,\text{last\_year}}} - 1$$
+$$SalesG_{ttm} = \frac{rev_{ttm,current}}{rev_{ttm,lastyear}} - 1$$
 
-&emsp; $\text{Profit}\underline{}\text{G}_{ttm}$: TTM net profit year-on-year growth
+&emsp; $ProfitG_{ttm}$: TTM net profit year-on-year growth
 
-$$\text{Profit}\underline{}\text{G}_{ttm} = \frac{net\_profit_{ttm,\text{current}}}{net\_profit_{ttm,\text{last\_year}}} - 1$$
+$$ProfitG_{ttm} = \frac{netprofit_{ttm,current}}{netprofit_{ttm,lastyear}} - 1$$
 
-&emsp; $\text{OCF}\underline{}\text{G}_{ttm}$: TTM operating cash flow YoY growth
+&emsp; $OCFG_{ttm}$: TTM operating cash flow YoY growth 
 
-$$\text{OCF}\underline{}\text{G}_{ttm} = \frac{ocf_{ttm,\text{current}}}{ocf_{ttm,\text{last\_year}}} - 1$$
+$$OCFG_{ttm} = \frac{ocf_{ttm,current}}{ocf_{ttm,lastyear}} - 1$$
 
-&emsp; $\text{ROE}\underline{}\text{G}_{ttm}$: TTM ROE year-on-year growth
+&emsp; $ROEG_{ttm}$: TTM ROE year-on-year growth
 
-$$\text{ROE}\underline{}\text{G}_{ttm} = \frac{roe_{ttm,\text{current}}}{roe_{ttm,\text{last\_year}}} - 1$$
+$$ROEG_{ttm} = \frac{roe_{ttm,current}}{roe_{ttm,lastyear}} - 1$$
 
+
+----
+
+&emsp; $\mathit{SalesG}_{ttm}$: TTM sales year-on-year growth
+
+$$\mathit{SalesG}_{ttm} = \frac{\mathit{rev}_{ttm,\text{current}}}{\mathit{rev}_{ttm,\text{lastyear}}} - 1$$
+
+&emsp; $\mathit{ProfitG}_{ttm}$: TTM net profit year-on-year growth
+
+$$\mathit{ProfitG}_{ttm} = \frac{\mathit{netprofit}_{ttm,\text{current}}}{\mathit{netprofit}_{ttm,\text{lastyear}}} - 1$$
+
+&emsp; $\mathit{OCFG}_{ttm}$: TTM operating cash flow YoY growth 
+
+$$\mathit{OCFG}_{ttm} = \frac{\mathit{ocf}_{ttm,\text{current}}}{\mathit{ocf}_{ttm,\text{lastyear}}} - 1$$
+
+&emsp; $\mathit{ROEG}_{ttm}$: TTM ROE year-on-year growth
+
+$$\mathit{ROEG}_{ttm} = \frac{\mathit{roe}_{ttm,\text{current}}}{\mathit{roe}_{ttm,\text{lastyear}}} - 1$$
 
 -----服了 一直改不好
 
