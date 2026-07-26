@@ -90,6 +90,7 @@ Backtesting results show that the composite factor under maximum IC optimization
 Result analysis:  
 The maximum IC optimized composite factor delivers the strongest predictive performance. The optimization assigns the full weight to PB, which renders the composite factor identical to the standalone PB factor, with slightly better performance than cross-style composite alternatives.  
 Within the sample period, the profitability quality factor "gpm_semi_YoY"  exhibits weak predictive power, while PB dominates among value factors. In addition, BP and PB are strongly negatively correlated. Incorporating BP introduces signal offset, so the optimizer excludes BP and the profitability quality factor.  
+
 Nevertheless, this approach bears notable limitations. Optimal weights are solved statically from full-sample data, which raises severe in-sample overfitting risks. Its out-of-sample predictive robustness may deteriorate amid shifts in market investment styles.  
 
 ### 1.7 Maximization of IC_IR Weighting
@@ -113,12 +114,14 @@ The solved optimal weights are "BP"=0.000, "PB"=1.000, and "gpm_semi_YoY"=0.000.
 Result analysis:  
 Backtesting results show that the composite factor under maximum "IC_IR"  optimization achieves an average IC of 0.0685, an "IC_IR"  of 0.435, and a monthly average quintile long-short portfolio return of 0.0189 over the full sample period.  
 The maximum "IC_IR"  optimization scheme delivers reliable predictive power, yet it may yield extreme weight allocations, where the composite factor degenerates into the standalone PB factor. Within the sample period, PB outperforms other factors in predictive performance. Incorporating BP and "gpm_semi_YoY"  introduces signal offset and lowers the overall "IC_IR" , so the optimizer assigns all weights to PB.  
+
 This method computes static optimal weights based on full-sample historical performance, which induces substantial in-sample overfitting risks. The extreme weight structure abandons multi-style diversification, making the composite factor less robust amid shifts in market investment styles.
 
 ## 2. Empirical Results
 Candidate synthesis factors: BP, PB, "gpm_semi_YoY"  
 Rolling window: 36 months  
 Half-life: 24 months  
+
 This study implements six composite factor synthesis approaches under a unified monthly cross-sectional backtesting framework. We conduct horizontal performance comparison based on average IC, "IC_IR"  and monthly average quintile long-short portfolio returns.  
 Backtesting performance exhibits clear stratification across methods. Composite factors constructed via maximization of IC, maximization of "IC_IR" , global PCA dimensionality reduction and equal-weighted synthesis generate persistent valid predictive signals. In contrast, three linear weighting schemes, namely static "IC_IR"  weighting, return-based dynamic weighting with half-life decay and dynamic "IC_IR"  weighting with half-life decay, deliver weak performance and cannot reliably produce excess returns.  
 
