@@ -315,15 +315,15 @@ $$\rho(F_{a},F_{b}) = \frac{Cov(F_{a},F_{b})}{\sqrt{Var(F_{a})}\cdot\sqrt{Var(F_
 
 Cov denotes covariance, and Var represents factor variance.
 
-&emsp; $\rho=1$: perfect positive linear correlation  
-&emsp; $\rho=-1$: perfect negative linear correlation  
-&emsp; $\rho=0$: no linear correlation  
+&emsp; 1) $\rho=1$: perfect positive linear correlation  
+&emsp; 2) $\rho=-1$: perfect negative linear correlation  
+&emsp; 3) $\rho=0$: no linear correlation  
 
 ### 4.2 Correlation matrix analysis
 We follow conventional criteria widely adopted in multi-factor quantitative research:  
-&emsp; |ρ|>0.7: High linear correlation with substantial information redundancy  
-&emsp; 0.3<|ρ|≤0.7: Moderate correlation indicating partial information overlap  
-&emsp; |ρ|≤0.3: Weak or negligible correlation, implying independent factor dimensions  
+&emsp; 1) |ρ|>0.7: High linear correlation with substantial information redundancy  
+&emsp; 2) 0.3<|ρ|≤0.7: Moderate correlation indicating partial information overlap  
+&emsp; 3) |ρ|≤0.3: Weak or negligible correlation, implying independent factor dimensions  
 Pearson correlation matrix for the three valid factors:  
 
  <div align="center">
@@ -360,7 +360,7 @@ Only one pair of high-correlation factors is found across the full sample, and t
 If BP, PB and "gpm_semi_YoY"  are directly incorporated simultaneously into the weighted multi-factor model, BP and PB will offset each other. The two factors carry signals with opposite directions and highly overlapping information, which undermines the predictive power of the composite factor.  
 
 ### 4.4 Correlation analysis and factor combination
-&emsp; 1)	Sub-factors within the same style bucket are prone to multicollinearity. BP and PB are homogeneous valuation metrics exhibiting a strong negative linear correlation; only one of the two shall be retained. 
+&emsp; 1)	Sub-factors within the same style bucket are prone to multicollinearity. BP and PB are homogeneous valuation metrics exhibiting a strong negative linear correlation; only one of the two shall be retained.  
 &emsp; 2)	Cross-style factors offer diversification benefits in information space. Valuation and profitability quality factors show minimal linear correlation. Integrating these two dimensions diversifies drawdown risks inherent to single-style strategies and enhances the long-run return stability of the composite factor.
 
 
