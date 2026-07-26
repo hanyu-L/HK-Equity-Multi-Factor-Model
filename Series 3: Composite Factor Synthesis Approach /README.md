@@ -97,7 +97,7 @@ The maximum "IC_IR"  weighting method originates also from Qian’s Quantitative
 
 $$\max \mathit{IC}_{IR} = \frac{\vec{w}^{\,T} \cdot \overrightarrow{\mathit{IC}}}{\sqrt{\vec{w}^{\,T} \Sigma \vec{w}}}$$
 
-where $\vec{w} denotes the factor weight vector, $\overrightarrow{IC}$ is the vector of full-sample average IC for each factor, and Σ represents the time-series covariance matrix of factor IC. To avoid negative weights and ensure economically meaningful factor interpretation, constrained optimization is implemented with the following restrictions:
+where $\vec{w}$ denotes the factor weight vector, $\overrightarrow{IC}$ is the vector of full-sample average IC for each factor, and $\Sigma$ represents the time-series covariance matrix of factor IC. To avoid negative weights and ensure economically meaningful factor interpretation, constrained optimization is implemented with the following restrictions:
 
 $$
 \begin{aligned}
