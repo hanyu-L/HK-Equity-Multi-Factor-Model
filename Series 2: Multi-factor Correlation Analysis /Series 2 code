@@ -1,9 +1,17 @@
 import pandas as pd
 import numpy as np
 import warnings
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
+import seaborn as sns
 warnings.filterwarnings("ignore")
 
-# ====================== 1. Data ingestion ======================
+# 解决中文与负号显示
+plt.rcParams["font.sans-serif"] = ["SimHei"]
+plt.rcParams["axes.unicode_minus"] = False
+
+#################### 1. Data ingestion #######################
+###############################################################
 df_income = pd.read_csv("hk_income.csv")
 df_balance = pd.read_csv("hk_balancesheet.csv")
 df_cashflow = pd.read_csv("hk_cashflow.csv")
@@ -17,8 +25,873 @@ for df in finance_df_list:
 # 财务指标表单独转换披露日期std_report_date
 df_indicator["std_report_date"] = pd.to_datetime(df_indicator["std_report_date"], errors="coerce")
 
-Factor construction
+#################### 2. Factor construction ####################
+################################################################
 2.1 Financial factors
+# ====================== 1. 读取四张原始财务数据表 ======================
+# 利润表、资产负债表、现金流量表、预计算财务指标表
+df_income = pd.read_csv("hk_income.csv")
+df_balance = pd.read_csv("hk_balancesheet.csv")
+df_cashflow = pd.read_csv("hk_cashflow.csv")
+df_indicator = pd.read_csv("hk_indicator.csv")
+
+# 修复：end_date为8位数字字符串 20190630，强制指定格式转换，杜绝1970偏移错误
+finance_df_list = [df_income, df_balance, df_cashflow, df_indicator]
+for df in finance_df_list:
+    # 先转为字符串，再按年月日8位数字解析
+    df["end_date"] = df["end_date"].astype(str).str.replace(".0", "", regex=False)
+    df["end_date"] = pd.to_datetime(df["end_date"], format="%Y%m%d", errors="coerce")
+
+# 披露日期同样处理
+df_indicator["std_report_date"] = df_indicator["std_report_date"].astype(str).str.replace(".0", "", regex=False)
+df_indicator["std_report_date"] = pd.to_datetime(df_indicator["std_report_date"], format="%Y%m%d", errors="coerce")
+
+# ====================== 2. 合并四张财务表（按股票+财报截止日主键合并） ======================
+# 第一步：利润表 + 资产负债表，利润表后缀_inc，资产负债表后缀_bal
+df_merge1 = pd.merge(
+    df_income,
+    df_balance,
+    on=["ts_code", "end_date"],
+    how="inner",
+    suffixes=("_inc", "_bal")
+)
+
+# 第二步：合并现金流表，现金流字段统一后缀_cf
+df_merge2 = pd.merge(
+    df_merge1,
+    df_cashflow,
+    on=["ts_code", "end_date"],
+    how="inner",
+    suffixes=("", "_cf")
+)
+
+# 第三步：合并财务指标表，指标表后缀_ind
+df_all_fin = pd.merge(
+    df_merge2,
+    df_indicator,
+    on=["ts_code", "end_date"],
+    how="inner",
+    suffixes=("", "_ind")
+)
+
+# 新增财报类型标记：12月=年报，6月=半年报，其余=季报
+df_all_fin["fiscal_type"] = np.where(
+    df_all_fin["end_date"].dt.month == 12, "annual",
+    np.where(df_all_fin["end_date"].dt.month == 6, "semi", "quarter")
+)
+print("✅ 四张财务表合并完成，总行数：", len(df_all_fin))
+
+# 打印全部字段确认后缀
+print("合并后全部字段列表：")
+print(df_all_fin.columns.tolist())
+
+# 安全打印核心财务字段（自动过滤不存在列，杜绝KeyError）
+check_cols = ["ts_code", "end_date", "Operating_revenue_inc", "Profit_attributable_to_equity_holders_inc", "Gross_profit_inc"]
+valid_cols = [c for c in check_cols if c in df_all_fin.columns]
+print("核心财务字段抽样：")
+print(df_all_fin[valid_cols].head(10))
+
+# ====================== 3. 提取全市场月度月末截面日期（用于PIT匹配） ======================
+# 读取日度行情原始数据
+df_price_raw = pd.read_csv("hk_price.csv")
+df_price_raw["trade_date"] = pd.to_datetime(df_price_raw["trade_date"], errors="coerce")
+
+# 按年月分组取每月最后一个交易日
+df_price_raw["year_month"] = df_price_raw["trade_date"].dt.to_period("M")
+monthly_cross_dates = df_price_raw.groupby("year_month")["trade_date"].max().reset_index()
+cross_date_list = monthly_cross_dates["trade_date"].tolist()
+
+print(f"✅ 月度调仓截面日期提取完成，合计{len(cross_date_list)}个月度截面")
+
+# ====================== 4. PIT时点匹配函数：单只股票+单截面，筛选披露日前已发布财报 ======================
+def get_latest_disclosed_fin(stock_code, cross_dt, fin_df):
+    """
+    PIT时点匹配核心函数，规避未来函数
+    参数：
+        stock_code: 个股代码 ts_code
+        cross_dt: 当月月末调仓截面日期（datetime）
+        fin_df: 合并后的全量财务总表 df_all_fin
+    返回：
+        最新一期已披露财报单行DataFrame；无符合条件财报返回空DataFrame
+    """
+    # 筛选当前股票全部财报记录
+    stock_all_fin = fin_df[fin_df["ts_code"] == stock_code].copy()
+    if len(stock_all_fin) == 0:
+        return pd.DataFrame()
+
+    # 仅保留披露时间早于/等于调仓截面日的财报，禁止使用未发布财报
+    valid_fin_data = stock_all_fin[stock_all_fin["std_report_date"] <= cross_dt]
+    if len(valid_fin_data) == 0:
+        return pd.DataFrame()
+
+    # 按财报截止日end_date倒序，取最新一期有效财报
+    latest_fin = valid_fin.sort_values(by="end_date", ascending=False).iloc[0:1]
+    return latest_fin
+
+# ====================== 5. 滚动计算TTM基础财务指标（核心：适配港股年报/半年报混合披露） ======================
+def calc_ttm_metrics(single_stock_fin):
+    single_stock_fin = single_stock_fin.sort_values(by="end_date", ascending=True).reset_index(drop=True)
+
+    ttm_col_list = [
+        "rev_ttm", "net_profit_ttm", "net_profit_deduct_ttm", "gross_profit_ttm", "ocf_ttm",
+        "total_equity_avg", "total_asset_avg", "ebit_ttm", "invest_cap_ttm"
+    ]
+    for col in ttm_col_list:
+        single_stock_fin[col] = np.nan
+
+    # 内部安全读取行字段，无后缀
+    def get_row_safe(r, col):
+        v = r.get(col, np.nan)
+        if pd.isna(v) or str(v).strip() == "":
+            return np.nan
+        return float(v)
+
+    for idx, row in single_stock_fin.iterrows():
+        current_end = row["end_date"]
+        current_type = row["fiscal_type"]
+        window_start = current_end - pd.DateOffset(months=12)
+        window_fin_data = single_stock_fin[
+            (single_stock_fin["end_date"] > window_start) &
+            (single_stock_fin["end_date"] <= current_end)
+        ]
+
+        # 原生无后缀字段读取
+        rev_inc = get_row_safe(row, "Operating_revenue")
+        net_profit_inc = get_row_safe(row, "Profit_attributable_to_equity_holders")
+        deduct_profit = get_row_safe(row, "holder_profit")
+        gross_inc = get_row_safe(row, "Gross_profit")
+        ocf_cf = get_row_safe(row, "netcash_operate")
+        int_exp = get_row_safe(row, "Interest_expense")
+        tax_exp = get_row_safe(row, "Income_tax_expense")
+        equity_bal = get_row_safe(row, "total_parent_equity")
+        asset_bal = get_row_safe(row, "Total_assets")
+        liab_bal = get_row_safe(row, "Total_liabilities")
+        cash_bal = get_row_safe(row, "Cash_and_cash_equivalent")
+
+        print(f"【{row['ts_code']} {current_end.date()}】营收:{rev_inc},净利润:{net_profit_inc}")
+
+        if current_type == "annual":
+            single_stock_fin.loc[idx, "rev_ttm"] = rev_inc
+            single_stock_fin.loc[idx, "net_profit_ttm"] = net_profit_inc
+            single_stock_fin.loc[idx, "net_profit_deduct_ttm"] = deduct_profit
+            single_stock_fin.loc[idx, "gross_profit_ttm"] = gross_inc
+            single_stock_fin.loc[idx, "ocf_ttm"] = ocf_cf
+
+        elif current_type in ["semi", "quarter"]:
+            last_year_same_period = single_stock_fin[
+                (single_stock_fin["end_date"] == current_end - pd.DateOffset(years=1)) &
+                (single_stock_fin["fiscal_type"] == current_type)
+            ]
+            last_year_annual = single_stock_fin[
+                (single_stock_fin["end_date"] == current_end - pd.DateOffset(years=1)) &
+                (single_stock_fin["fiscal_type"] == "annual")
+            ]
+            if len(last_year_same_period) > 0 and len(last_year_annual) > 0:
+                ly_semi_row = last_year_same_period.iloc[0]
+                ly_annual_row = last_year_annual.iloc[0]
+
+                ly_rev = get_row_safe(ly_annual_row, "Operating_revenue") - get_row_safe(ly_semi_row, "Operating_revenue")
+                ly_np = get_row_safe(ly_annual_row, "Profit_attributable_to_equity_holders") - get_row_safe(ly_semi_row, "Profit_attributable_to_equity_holders")
+                ly_deduct = get_row_safe(ly_annual_row, "holder_profit") - get_row_safe(ly_semi_row, "holder_profit")
+                ly_gross = get_row_safe(ly_annual_row, "Gross_profit") - get_row_safe(ly_semi_row, "Gross_profit")
+                ly_ocf = get_row_safe(ly_annual_row, "netcash_operate") - get_row_safe(ly_semi_row, "netcash_operate")
+
+                single_stock_fin.loc[idx, "rev_ttm"] = rev_inc + ly_rev
+                single_stock_fin.loc[idx, "net_profit_ttm"] = net_profit_inc + ly_np
+                single_stock_fin.loc[idx, "net_profit_deduct_ttm"] = deduct_profit + ly_deduct
+                single_stock_fin.loc[idx, "gross_profit_ttm"] = gross_inc + ly_gross
+                single_stock_fin.loc[idx, "ocf_ttm"] = ocf_cf + ly_ocf
+
+        # 平均净资产、平均总资产
+        if idx > 0:
+            prev_row = single_stock_fin.iloc[idx - 1]
+            prev_equity = get_row_safe(prev_row, "total_parent_equity")
+            prev_asset = get_row_safe(prev_row, "Total_assets")
+            single_stock_fin.loc[idx, "total_equity_avg"] = (equity_bal + prev_equity) / 2
+            single_stock_fin.loc[idx, "total_asset_avg"] = (asset_bal + prev_asset) / 2
+
+        # EBIT、投入资本
+        ebit = net_profit_inc + int_exp + tax_exp
+        invest_cap = liab_bal + equity_bal - cash_bal
+        single_stock_fin.loc[idx, "ebit_ttm"] = ebit
+        single_stock_fin.loc[idx, "invest_cap_ttm"] = invest_cap
+
+    print("单股票TTM计算抽样：")
+    print(single_stock_fin[["ts_code","end_date","fiscal_type","rev_ttm","net_profit_ttm"]].head())
+    return single_stock_fin
+
+# 批量对全市场个股执行TTM计算
+fin_ttm_result_list = []
+for code, stock_fin_group in df_all_fin.groupby("ts_code"):
+    stock_ttm_df = calc_ttm_metrics(stock_fin_group)
+    fin_ttm_result_list.append(stock_ttm_df)
+df_fin_ttm = pd.concat(fin_ttm_result_list, ignore_index=True)
+
+print("✅ TTM滚动财务指标计算完成，全局抽样：")
+print(df_fin_ttm[["ts_code","end_date","rev_ttm","net_profit_ttm"]].head(20))
+
+# ====================== 6. 逐月度截面匹配财报 + 批量计算全部财务因子 ======================
+monthly_fin_output = []
+# 遍历每一个月末调仓截面日期
+for cross_dt in cross_date_list:
+    print(f"正在处理截面：{cross_dt.date()}")
+
+    # 1. 获取当前截面当日全市场个股 + 对应总市值
+    cross_stock_df = df_price_raw[df_price_raw["trade_date"] == cross_dt].copy()
+    cap_mapping = dict(zip(cross_stock_df["ts_code"], cross_stock_df["market_cap"]))
+    stock_pool = cross_stock_df["ts_code"].unique()
+
+    # 循环单只股票处理
+    for stock_code in stock_pool:
+        # 调用修复后的PIT函数
+        latest_fin_df = get_latest_disclosed_fin(stock_code, cross_dt, df_fin_ttm)
+
+        # 情况1：无任何已披露财报，全部财务因子填充NaN
+        if len(latest_fin_df) == 0:
+            base_row = {
+                "ts_code": stock_code,
+                "trade_date": cross_dt,
+                "fiscal_type": "no_fin"
+            }
+            factor_list = [
+                # 3.1 估值因子
+                "EP_ttm", "EPcut_ttm", "BP", "SP_ttm", "PE", "PB", "PCF", "PS", "PEG",
+                # 3.2 TTM同比成长因子
+                "Sales_G_ttm", "Profit_G_ttm", "OCF_G_ttm", "ROE_G_ttm",
+                # 3.2 半年同比成长因子
+                "Sales_G_6m", "Profit_G_6m", "OCF_G_6m", "ROE_G_6m",
+                # 3.6 财务质量因子
+                "roe_ttm", "roe_6m_YoY", "roa_ttm", "roa_YoY", "gpm_ttm",
+                "gpm_semi_YoY", "cfo_to_np_ttm", "roic_ttm"
+            ]
+            for fac in factor_list:
+                base_row[fac] = np.nan
+            monthly_fin_output.append(base_row)
+            continue
+
+        # 情况2：存在有效财报，提取单行财报数据
+        fin_row = latest_fin_df.iloc[0]
+        market_cap = cap_mapping.get(stock_code, np.nan)
+        curr_fiscal_type = fin_row["fiscal_type"]
+        out_row = {
+            "ts_code": stock_code,
+            "trade_date": cross_dt,
+            "fiscal_type": curr_fiscal_type
+        }
+
+        # 封装安全读取字段，无后缀
+        def get_safe(col):
+            val = fin_row.get(col, np.nan)
+            if pd.isna(val):
+                return np.nan
+            return float(val)
+
+        # 基础财务指标提取
+        net_profit_ttm = get_safe("net_profit_ttm")
+        net_profit_deduct_ttm = get_safe("net_profit_deduct_ttm")
+        equity_bal = get_safe("total_parent_equity")
+        rev_ttm = get_safe("rev_ttm")
+        ocf_ttm = get_safe("ocf_ttm")
+        avg_equity = get_safe("total_equity_avg")
+        avg_asset = get_safe("total_asset_avg")
+        gross_profit_ttm = get_safe("gross_profit_ttm")
+        ebit_ttm = get_safe("ebit_ttm")
+        invest_cap_ttm = get_safe("invest_cap_ttm")
+
+        # -------------------------- 3.1 估值因子计算 --------------------------
+        if not pd.isna(market_cap) and market_cap != 0:
+            out_row["EP_ttm"] = net_profit_ttm / market_cap
+            out_row["EPcut_ttm"] = net_profit_deduct_ttm / market_cap
+            out_row["BP"] = equity_bal / market_cap
+            out_row["SP_ttm"] = rev_ttm / market_cap
+        else:
+            out_row["EP_ttm"] = np.nan
+            out_row["EPcut_ttm"] = np.nan
+            out_row["BP"] = np.nan
+            out_row["SP_ttm"] = np.nan
+
+        out_row["PE"] = market_cap / net_profit_ttm if (not pd.isna(net_profit_ttm) and net_profit_ttm != 0) else np.nan
+        out_row["PB"] = market_cap / equity_bal if (not pd.isna(equity_bal) and equity_bal != 0) else np.nan
+        out_row["PCF"] = market_cap / ocf_ttm if (not pd.isna(ocf_ttm) and ocf_ttm != 0) else np.nan
+        out_row["PS"] = market_cap / rev_ttm if (not pd.isna(rev_ttm) and rev_ttm != 0) else np.nan
+
+        # -------------------------- 3.2 TTM同比成长因子 --------------------------
+        last_year_fin = df_fin_ttm[
+            (df_fin_ttm["ts_code"] == stock_code) &
+            (df_fin_ttm["end_date"] == fin_row["end_date"] - pd.DateOffset(years=1))
+        ]
+        if len(last_year_fin) > 0:
+            ly_r = last_year_fin.iloc[0]
+            ly_rev_ttm = ly_r.get("rev_ttm", np.nan)
+            ly_np_ttm = ly_r.get("net_profit_ttm", np.nan)
+            ly_ocf_ttm = ly_r.get("ocf_ttm", np.nan)
+            ly_roe_ttm = ly_r.get("roe_ttm", np.nan)
+
+            out_row["Sales_G_ttm"] = (rev_ttm / ly_rev_ttm) - 1 if (not pd.isna(ly_rev_ttm) and ly_rev_ttm != 0) else np.nan
+            out_row["Profit_G_ttm"] = (net_profit_ttm / ly_np_ttm) - 1 if (not pd.isna(ly_np_ttm) and ly_np_ttm != 0) else np.nan
+            out_row["OCF_G_ttm"] = (ocf_ttm / ly_ocf_ttm) - 1 if (not pd.isna(ly_ocf_ttm) and ly_ocf_ttm != 0) else np.nan
+            out_row["ROE_G_ttm"] = (get_safe("roe_ttm") / ly_roe_ttm) - 1 if (not pd.isna(ly_roe_ttm) and ly_roe_ttm != 0) else np.nan
+        else:
+            out_row["Sales_G_ttm"] = np.nan
+            out_row["Profit_G_ttm"] = np.nan
+            out_row["OCF_G_ttm"] = np.nan
+            out_row["ROE_G_ttm"] = np.nan
+
+        # PEG
+        out_row["PEG"] = out_row["PE"] / out_row["Sales_G_ttm"] if (not pd.isna(out_row["Sales_G_ttm"]) and out_row["Sales_G_ttm"] != 0) else np.nan
+
+        # -------------------------- 半年同比成长因子 --------------------------
+        last_semi_fin = df_fin_ttm[
+            (df_fin_ttm["ts_code"] == stock_code) &
+            (df_fin_ttm["end_date"] == fin_row["end_date"] - pd.DateOffset(years=1)) &
+            (df_fin_ttm["fiscal_type"] == curr_fiscal_type)
+        ]
+        if curr_fiscal_type in ["semi", "quarter"] and len(last_semi_fin) > 0:
+            ly_semi_r = last_semi_fin.iloc[0]
+            curr_rev_semi = get_safe("Operating_revenue")
+            ly_rev_semi = ly_semi_r.get("Operating_revenue", np.nan)
+            curr_np_semi = get_safe("Profit_attributable_to_equity_holders")
+            ly_np_semi = ly_semi_r.get("Profit_attributable_to_equity_holders", np.nan)
+            curr_ocf_semi = get_safe("netcash_operate")
+            ly_ocf_semi = ly_semi_r.get("netcash_operate", np.nan)
+            curr_roe6 = get_safe("roe_6m_YoY")
+            ly_roe6 = ly_semi_r.get("roe_6m_YoY", np.nan)
+
+            out_row["Sales_G_6m"] = (curr_rev_semi / ly_rev_semi) - 1 if (not pd.isna(ly_rev_semi) and ly_rev_semi != 0) else np.nan
+            out_row["Profit_G_6m"] = (curr_np_semi / ly_np_semi) - 1 if (not pd.isna(ly_np_semi) and ly_np_semi != 0) else np.nan
+            out_row["OCF_G_6m"] = (curr_ocf_semi / ly_ocf_semi) - 1 if (not pd.isna(ly_ocf_semi) and ly_ocf_semi != 0) else np.nan
+            out_row["ROE_G_6m"] = (curr_roe6 / ly_roe6) - 1 if (not pd.isna(ly_roe6) and ly_roe6 != 0) else np.nan
+        else:
+            out_row["Sales_G_6m"] = np.nan
+            out_row["Profit_G_6m"] = np.nan
+            out_row["OCF_G_6m"] = np.nan
+            out_row["ROE_G_6m"] = np.nan
+
+        # -------------------------- 3.6 财务质量因子计算 --------------------------
+        out_row["roe_ttm"] = net_profit_ttm / avg_equity if (not pd.isna(avg_equity) and avg_equity != 0) else np.nan
+        out_row["roa_ttm"] = net_profit_ttm / avg_asset if (not pd.isna(avg_asset) and avg_asset != 0) else np.nan
+        out_row["gpm_ttm"] = gross_profit_ttm / rev_ttm if (not pd.isna(rev_ttm) and rev_ttm != 0) else np.nan
+        out_row["cfo_to_np_ttm"] = ocf_ttm / net_profit_ttm if (not pd.isna(net_profit_ttm) and net_profit_ttm != 0) else np.nan
+        out_row["roic_ttm"] = ebit_ttm / invest_cap_ttm if (not pd.isna(invest_cap_ttm) and invest_cap_ttm != 0) else np.nan
+
+        # 半年同比质量指标
+        if curr_fiscal_type in ["semi", "quarter"] and len(last_semi_fin) > 0:
+            ly_semi_r = last_semi_fin.iloc[0]
+            curr_roe6 = get_safe("roe_6m_YoY")
+            ly_roe6 = ly_semi_r.get("roe_6m_YoY", np.nan)
+            curr_roa6 = get_safe("roa_YoY")
+            ly_roa6 = ly_semi_r.get("roa_YoY", np.nan)
+            curr_gross = get_safe("Gross_profit")
+            curr_rev_semi = get_safe("Operating_revenue")
+            ly_gross = ly_semi_r.get("Gross_profit", np.nan)
+            ly_rev_semi = ly_semi_r.get("Operating_revenue", np.nan)
+
+            out_row["roe_6m_YoY"] = (curr_roe6 / ly_roe6) - 1 if (not pd.isna(ly_roe6) and ly_roe6 != 0) else np.nan
+            out_row["roa_YoY"] = (curr_roa6 / ly_roa6) - 1 if (not pd.isna(ly_roa6) and ly_roa6 != 0) else np.nan
+
+            if (not pd.isna(curr_rev_semi) and curr_rev_semi != 0) and (not pd.isna(ly_rev_semi) and ly_rev_semi != 0):
+                curr_margin = curr_gross / curr_rev_semi
+                ly_margin = ly_gross / ly_rev_semi
+                out_row["gpm_semi_YoY"] = (curr_margin / ly_margin) - 1 if ly_margin != 0 else np.nan
+            else:
+                out_row["gpm_semi_YoY"] = np.nan
+        else:
+            out_row["roe_6m_YoY"] = np.nan
+            out_row["roa_YoY"] = np.nan
+            out_row["gpm_semi_YoY"] = np.nan
+
+        monthly_fin_output.append(out_row)
+
+# 拼接全部月度截面财务原始因子
+df_fin_monthly = pd.concat([pd.DataFrame([row]) for row in monthly_fin_output], ignore_index=True)
+
+# 输出模块1结果：仅原始财务因子，无去极值、标准化、中性化
+df_fin_monthly.to_csv("module1_fin_factor_raw.csv", index=False, encoding="utf-8-sig")
+print("✅ 模块1全部财务因子计算完成，输出文件：module1_fin_factor_raw.csv")
+print("输出字段列表：", df_fin_monthly.columns.tolist())
+
+#################### 2.2 Price-volume factors #######################
+#####################################################################
+# 读取行情（复用前面df_price_raw，无需重复读取，内核重启再执行pd.read_csv）
+# df_price_raw = pd.read_csv("hk_price.csv")
+# df_price_raw["trade_date"] = pd.to_datetime(df_price_raw["trade_date"], errors="coerce")
+
+# 筛选每月最后一个交易日（和财务模块截面日期完全对齐）
+monthly_price = df_price_raw[df_price_raw["trade_date"].isin(cross_date_list)].copy()
+
+# 基础行情字段清洗，空值填充np.nan
+def safe_float(val):
+    if pd.isna(val):
+        return np.nan
+    return float(val)
+
+# 基础价量指标提取
+monthly_price["close"] = monthly_price["close"].apply(safe_float)
+monthly_price["open"] = monthly_price["open"].apply(safe_float)
+monthly_price["high"] = monthly_price["high"].apply(safe_float)
+monthly_price["low"] = monthly_price["low"].apply(safe_float)
+monthly_price["volume"] = monthly_price["volume"].apply(safe_float)
+monthly_price["turnover"] = monthly_price["turnover"].apply(safe_float)
+monthly_price["market_cap"] = monthly_price["market_cap"].apply(safe_float)
+
+# 月度基础价量因子（当月截面静态指标）
+monthly_price["month_return"] = (monthly_price["close"] / monthly_price["open"]) - 1
+monthly_price["amplitude"] = (monthly_price["high"] - monthly_price["low"]) / monthly_price["open"]
+monthly_price["turnover_rate"] = monthly_price["turnover"] / monthly_price["market_cap"]
+
+# 只保留关键字段，后续合并财务因子
+monthly_price_raw = monthly_price[
+    ["ts_code", "trade_date", "close", "open", "high", "low", "volume", "turnover", "market_cap",
+     "month_return", "amplitude", "turnover_rate"]
+].copy()
+
+# 输出月度原始行情截面
+monthly_price_raw.to_csv("module2_price_volume_raw.csv", index=False, encoding="utf-8-sig")
+print("✅ 模块2 月度行情截面因子生成完成，文件：module2_price_volume_raw.csv")
+print("行情因子抽样：")
+print(monthly_price_raw.head(10))
+
+# ====================== 合并财务因子、行情价量因子，生成全原始因子总表 ======================
+# 读取模块1、模块2输出文件
+df_fin_raw = pd.read_csv("module1_fin_factor_raw.csv", encoding="utf-8-sig")
+df_price_raw = pd.read_csv("module2_price_volume_raw.csv", encoding="utf-8-sig")
+
+# 双主键合并，保留同时有财务+行情数据的样本
+df_all_raw = pd.merge(
+    df_price_raw,
+    df_fin_raw,
+    on=["ts_code", "trade_date"],
+    how="inner"
+)
+
+# 输出合并后完整原始因子表
+df_all_raw.to_csv("all_factor_raw.csv", index=False, encoding="utf-8-sig")
+print(f"✅ 财务+行情因子合并完成，总样本行数：{len(df_all_raw)}")
+print("合并后字段数量：", len(df_all_raw.columns))
+print("数据抽样：")
+print(df_all_raw.head(5))
+
+#################### Factor preprocessing and neutralisation #######################
+####################################################################################
+# ====================== 1. 读取合并后的全原始因子表 ======================
+df_all_raw = pd.read_csv("all_factor_raw.csv", encoding="utf-8-sig")
+print("原始总样本量：", len(df_all_raw))
+print("原始字段列表：", df_all_raw.columns.tolist())
+
+# 区分非因子主键字段 & 待处理因子列表
+id_cols = ["ts_code", "trade_date", "fiscal_type"]
+factor_cols = [col for col in df_all_raw.columns if col not in id_cols]
+print(f"待预处理因子总数：{len(factor_cols)}")
+
+# ====================== 2. MAD去极值函数（单因子横截面） ======================
+def mad_winsorize(series, n_mad=3):
+    """
+    MAD中位数绝对偏差去极值
+    series: 单月横截面因子序列
+    n_mad: 偏离中位数几倍MAD截断，默认3倍
+    """
+    data = series.dropna()
+    median = np.median(data)
+    mad = np.median(np.abs(data - median))
+    if mad == 0:
+        return series
+    upper = median + n_mad * mad
+    lower = median - n_mad * mad
+    # 截断极值
+    return series.clip(lower=lower, upper=upper)
+
+# ====================== 3. Z-score横截面标准化函数 ======================
+def cross_section_zscore(series):
+    """单月横截面标准化，均值0，标准差1"""
+    data = series.dropna()
+    mean = np.mean(data)
+    std = np.std(data)
+    if std == 0:
+        return series - mean
+    return (series - mean) / std
+
+# ====================== 4. 按月分组批量预处理 ======================
+processed_list = []
+# 按调仓月份分组，每月单独横截面处理
+for dt, group in df_all_raw.groupby("trade_date"):
+    print(f"正在处理截面：{dt}，当月股票数量：{len(group)}")
+    group_clean = group.copy()
+    
+    # 遍历每个因子执行 MAD去极值 → Z标准化 → 均值填充缺失
+    for fac in factor_cols:
+        # 1. MAD去极值
+        group_clean[fac] = mad_winsorize(group_clean[fac])
+        # 2. 横截面Z-score标准化
+        group_clean[fac] = cross_section_zscore(group_clean[fac])
+        # 3. 当月横截面均值填充NaN
+        cross_mean = group_clean[fac].mean()
+        group_clean[fac] = group_clean[fac].fillna(cross_mean)
+    
+    processed_list.append(group_clean)
+
+# 拼接所有月度截面
+df_all_clean = pd.concat(processed_list, ignore_index=True)
+
+# ====================== 1. 读取标准化因子 + 绑定行业 ======================
+df_all_clean = pd.read_csv("all_factor_clean.csv", encoding="utf-8-sig")
+
+# 读取行业表，统一列名小写
+df_industry = pd.read_csv("hk_industry.csv", encoding="utf-8-sig")
+df_industry.columns = df_industry.columns.str.lower()
+# 构建股票行业映射
+industry_map = df_industry[["ts_code", "industry"]].drop_duplicates().set_index("ts_code")["industry"].to_dict()
+# 绑定行业，无行业填充Unknown
+df_all_clean["industry"] = df_all_clean["ts_code"].map(industry_map).fillna("Unknown")
+
+# 先全局剔除仙股（收盘价<0.5港币）
+df_temp = df_all_clean[df_all_clean["close"] >= 0.5].copy()
+
+# ====================== 2. 按月循环过滤低流动性标的（不用groupby.apply，无索引问题） ======================
+valid_month_list = []
+# 提取所有唯一月份
+unique_dates = df_temp["trade_date"].unique()
+
+for single_dt in unique_dates:
+    # 提取当月全样本
+    month_df = df_temp[df_temp["trade_date"] == single_dt].copy()
+    if len(month_df) < 5:
+        continue
+    # 计算当月成交额20%分位数
+    vol_q20 = month_df["turnover"].quantile(0.2)
+    # 保留成交额>=20分位的股票
+    month_filtered = month_df[month_df["turnover"] >= vol_q20]
+    valid_month_list.append(month_filtered)
+
+# 拼接所有过滤后的月度数据
+df_universe = pd.concat(valid_month_list, ignore_index=True)
+
+# ====================== 输出结果 ======================
+print(f"过滤前总样本：{len(df_all_clean)}")
+print(f"剔除仙股后样本：{len(df_temp)}")
+print(f"最终有效选股池样本：{len(df_universe)}")
+print("数据抽样：")
+print(df_universe[["ts_code","trade_date","close","turnover","industry","market_cap"]].head(10))
+
+#################### 2.3.4 Sector neutralisation and market capitalisation #######################
+##################################################################################################
+def cross_section_wls_neutralize(base_df, factor_name):
+    # base_df：完整当月截面，全程不删行
+    df_full = base_df.copy()
+    df_full["market_cap"] = pd.to_numeric(df_full["market_cap"], errors="coerce")
+    df_full[factor_name] = pd.to_numeric(df_full[factor_name], errors="coerce")
+    df_full["ln_market_cap"] = np.log(df_full["market_cap"].clip(lower=100000))
+
+    # 仅临时提取回归可用样本，不修改原表
+    reg_data = df_full.dropna(subset=["market_cap", factor_name, "industry"]).copy()
+    if len(reg_data) < 20:
+        df_full[f"{factor_name}_neu"] = df_full[factor_name]
+        return df_full
+
+    # 行业哑变量
+    ind_dummies = pd.get_dummies(reg_data["industry"], prefix="ind", drop_first=True).astype(float)
+    X_base = pd.concat([ind_dummies, reg_data[["ln_market_cap"]]], axis=1)
+    X_base = X_base.loc[:, X_base.std() > 1e-10]
+
+    y = reg_data[factor_name].astype(float)
+    w = reg_data["market_cap"].astype(float)
+    resid_series = pd.Series(np.nan, index=df_full.index)
+
+    # 三层回归兜底
+    try:
+        X = sm.add_constant(X_base)
+        mod = sm.WLS(y, X, weights=w, missing="drop")
+        fit = mod.fit()
+        resid_series.loc[reg_data.index] = fit.resid
+    except np.linalg.LinAlgError:
+        try:
+            X_s = sm.add_constant(reg_data[["ln_market_cap"]].astype(float))
+            mod_s = sm.WLS(y, X_s, weights=w, missing="drop")
+            fit_s = mod_s.fit()
+            resid_series.loc[reg_data.index] = fit_s.resid
+        except:
+            resid_series = df_full[factor_name]
+
+    df_full[f"{factor_name}_neu"] = resid_series
+    return df_full
+
+# ---------------------- 全局预处理 ----------------------
+id_columns = ["ts_code", "trade_date", "fiscal_type", "industry", "close", "turnover", "market_cap", "open", "high", "low", "volume"]
+factor_list = [col for col in df_universe.columns if col not in id_columns]
+print(f"待中性化因子总数：{len(factor_list)}")
+
+# 全局转数值
+for fac in factor_list:
+    df_universe[fac] = pd.to_numeric(df_universe[fac], errors="coerce")
+
+# ---------------------- 按月批量中性化（关键：以原始完整切片为基底） ----------------------
+neutral_result_container = []
+all_month_dates = df_universe["trade_date"].unique()
+
+for date in all_month_dates:
+    month_full = df_universe[df_universe["trade_date"] == date].copy()
+    print(f"处理截面 {date}，股票数量：{len(month_full)}")
+    current_df = month_full.copy()
+    for fac in factor_list:
+        # 每次都传入完整current_df，仅新增neu列，不删除任何行
+        current_df = cross_section_wls_neutralize(current_df, fac)
+    neutral_result_container.append(current_df)
+
+# 拼接所有完整月度截面，不会丢行
+df_neutral_all = pd.concat(neutral_result_container, ignore_index=True)
+print(f"拼接后总行数：{len(df_neutral_all)}")
+
+# ---------------------- 输出整理 ----------------------
+neu_factor_cols = [f"{f}_neu" for f in factor_list]
+final_cols = id_columns + neu_factor_cols
+df_neutral_final = df_neutral_all[final_cols].copy()
+
+rename_mapping = {f"{fac}_neu": fac for fac in factor_list}
+df_neutral_final = df_neutral_final.rename(columns=rename_mapping)
+
+df_neutral_final.to_csv("all_factor_neutral.csv", index=False, encoding="utf-8-sig")
+print("✅ 行业+市值双重WLS中性化完成，输出文件：all_factor_neutral.csv")
+print(f"中性后总样本量：{len(df_neutral_final)}")
+print(df_neutral_final.head(8))
+
+#################### Single factor testing framework ############################################
+##################################################################################################
+df_return = pd.read_csv("hsi_return.csv", encoding="utf-8-sig")
+print("收益表全部字段：")
+print(df_return.columns.tolist())
+
+# 读取日度行情
+df_daily = pd.read_csv("hk_price.csv", encoding="utf-8-sig")
+df_daily["trade_date"] = pd.to_datetime(df_daily["trade_date"])
+df_daily["year_month"] = df_daily["trade_date"].dt.to_period("M")
+
+# 取每月最后一日收盘价作为截面价格
+month_close = df_daily.sort_values("trade_date").groupby(["ts_code", "year_month"]).tail(1)[
+    ["ts_code", "trade_date", "close", "year_month"]
+].copy()
+month_close = month_close.sort_values(["ts_code", "trade_date"])
+
+# 下一期收盘价
+month_close["next_close"] = month_close.groupby("ts_code")["close"].shift(-1)
+# 下月收益
+month_close["next_month_return"] = month_close["next_close"] / month_close["close"] - 1
+
+# 只保留当月截面，剔除最后一期（无下期收益）
+df_month_ret = month_close.dropna(subset=["next_month_return"])[
+    ["ts_code", "trade_date", "next_month_return"]
+].copy()
+
+# 输出标准个股收益表
+df_month_ret.to_csv("stock_monthly_return.csv", index=False, encoding="utf-8-sig")
+print("✅ 个股月度收益表生成完成 stock_monthly_return.csv")
+print(df_month_ret.head())
+
+# 1. 读取中性后因子 + 个股月度收益
+df_neu = pd.read_csv("all_factor_neutral.csv", encoding="utf-8-sig")
+df_return = pd.read_csv("stock_monthly_return.csv", encoding="utf-8-sig")
+
+# 合并
+match_cols = ["ts_code", "trade_date"]
+ret_col = "next_month_return"
+df_test = pd.merge(
+    df_neu,
+    df_return[match_cols + [ret_col]],
+    on=match_cols,
+    how="inner"
+)
+print(f"检验样本总量：{len(df_test)}")
+
+# 区分标识列与因子列
+id_cols = ["ts_code", "trade_date", "fiscal_type", "industry", "close", "turnover", "market_cap", ret_col]
+factor_list = [col for col in df_test.columns if col not in id_cols]
+print(f"待检验因子数量：{len(factor_list)}")
+
+factor_result = []
+for fac in factor_list:
+    ic_list = []
+    long_short_ret_list = []
+    # 按月横截面分组
+    for dt, group in df_test.groupby("trade_date"):
+        # 过滤样本过少、因子空值过多的截面
+        total_stock = len(group)
+        valid_fac_num = group[fac].notna().sum()
+        if total_stock < 50 or valid_fac_num < 30:
+            continue
+        
+        # 1. 月度IC：仅使用非空样本计算相关系数
+        sub_group = group.dropna(subset=[fac, ret_col])
+        if len(sub_group) < 20:
+            continue
+        ic = sub_group[[fac, ret_col]].corr().iloc[0, 1]
+        ic_list.append(ic)
+
+        # 2. 五层分层，添加duplicates="drop"容错
+        try:
+            sub_group["quantile"] = pd.qcut(
+                sub_group[fac].rank(method="first"),
+                q=5,
+                labels=[1,2,3,4,5],
+                duplicates="drop"
+            )
+            quint_ret = sub_group.groupby("quantile")[ret_col].mean()
+            # 确保存在1、5分位再计算多空
+            if {1,5}.issubset(set(quint_ret.index)):
+                ls_ret = quint_ret[5] - quint_ret[1]
+                long_short_ret_list.append(ls_ret)
+        except Exception as e:
+            continue
+
+    # 无有效月度数据直接标记空
+    if len(ic_list) == 0:
+        factor_result.append({
+            "factor_name": fac,
+            "avg_IC": np.nan,
+            "IC_IR": np.nan,
+            "avg_long_short_ret": np.nan
+        })
+        continue
+
+    # 汇总时序指标
+    ic_mean = np.mean(ic_list)
+    ic_std = np.std(ic_list)
+    ic_ir = ic_mean / ic_std if ic_std != 0 else np.nan
+    avg_ls_ret = np.mean(long_short_ret_list) if len(long_short_ret_list) > 0 else np.nan
+
+    factor_result.append({
+        "factor_name": fac,
+        "avg_IC": ic_mean,
+        "IC_IR": ic_ir,
+        "avg_long_short_ret": avg_ls_ret
+    })
+
+# 输出检验汇总表
+df_summary = pd.DataFrame(factor_result)
+df_summary.to_csv("single_factor_test_result.csv", index=False, encoding="utf-8-sig")
+print("\n===== 因子检验结果（按IC_IR降序） =====")
+print(df_summary.sort_values("IC_IR", ascending=False))
+
+# 筛选有效因子标准：|平均IC|>0.02，IC_IR>0.3
+valid_factors = df_summary[
+    (abs(df_summary["avg_IC"]) > 0.02) &
+    (df_summary["IC_IR"] > 0.3)
+]["factor_name"].tolist()
+print(f"\n筛选后有效因子数量：{len(valid_factors)}")
+print("有效因子列表：", valid_factors)
+
+# 输出相关性分析专用数据集
+output_cols = ["ts_code", "trade_date", "industry", ret_col] + valid_factors
+df_valid_corr = df_test[output_cols].copy()
+df_valid_corr.to_csv("valid_factor_for_corr.csv", index=False, encoding="utf-8-sig")
+print("✅ 有效因子文件导出完成 valid_factor_for_corr.csv，可进入相关性分析")
+
+# 放宽标准：IC绝对值>0.015，IC_IR绝对值>0.25，正向、反向选股因子全部保留
+valid_factors = df_summary[
+    (abs(df_summary["avg_IC"]) > 0.015) &
+    (abs(df_summary["IC_IR"]) > 0.25)
+]["factor_name"].tolist()
+print(f"\n放宽阈值后筛选有效因子数量：{len(valid_factors)}")
+print("有效因子列表：", valid_factors)
+
+# 输出相关性分析专用数据集
+output_cols = ["ts_code", "trade_date", "industry", ret_col] + valid_factors
+df_valid_corr = df_test[output_cols].copy()
+df_valid_corr.to_csv("valid_factor_for_corr.csv", index=False, encoding="utf-8-sig")
+print("✅ 有效因子文件重新导出完成 valid_factor_for_corr.csv")
+
+# 极度宽松筛选规则
+valid_factors = df_summary[
+    (abs(df_summary["avg_IC"]) > 0.01) &
+    (abs(df_summary["IC_IR"]) > 0.15)
+]["factor_name"].tolist()
+print(f"\n极度放宽阈值后筛选有效因子数量：{len(valid_factors)}")
+print("有效因子列表：", valid_factors)
+
+# 重导出相关性数据集
+output_cols = ["ts_code", "trade_date", "industry", ret_col] + valid_factors
+df_valid_corr = df_test[output_cols].copy()
+df_valid_corr.to_csv("valid_factor_for_corr.csv", index=False, encoding="utf-8-sig")
+print("✅ 宽松版有效因子文件导出完成 valid_factor_for_corr.csv")
+
+#################### 4. Correlation and multicollinearity of surviving factors ###################
+##################################################################################################
+# 1. 读取筛选后的有效因子数据
+df_corr_input = pd.read_csv("valid_factor_for_corr.csv", encoding="utf-8-sig")
+
+# 分离非因子标识字段与待分析因子
+id_label_cols = ["ts_code", "trade_date", "industry", "next_month_return"]
+factor_cols = [col for col in df_corr_input.columns if col not in id_label_cols]
+print("参与相关性分析的有效因子：", factor_cols)
+
+# 2. 计算全因子相关系数矩阵
+corr_matrix = df_corr_input[factor_cols].corr()
+# 导出矩阵文件
+corr_matrix.to_csv("factor_correlation_matrix.csv", encoding="utf-8-sig")
+print("✅ 因子相关系数矩阵已输出：factor_correlation_matrix.csv")
+print("\n相关系数矩阵：")
+print(corr_matrix)
+
+# 3. 筛选高相关因子配对（阈值|r|>0.7判定冗余）
+high_corr_records = []
+for i in range(len(factor_cols)):
+    for j in range(i + 1, len(factor_cols)):
+        corr_value = corr_matrix.iloc[i, j]
+        if abs(corr_value) > 0.7:
+            high_corr_records.append({
+                "factor_1": factor_cols[i],
+                "factor_2": factor_cols[j],
+                "correlation": corr_value
+            })
+df_high_corr = pd.DataFrame(high_corr_records)
+df_high_corr.to_csv("high_correlation_factor_pairs.csv", index=False, encoding="utf-8-sig")
+print(f"\n高相关冗余因子配对数量（|相关系数|>0.7）：{len(df_high_corr)}")
+print(df_high_corr)
+
+# 4. 绘制相关性热力图
+plt.figure(figsize=(7, 6))
+sns.heatmap(
+    corr_matrix,
+    cmap="RdBu_r",
+    vmin=-1, vmax=1,
+    annot=True, fmt=".3f",
+    linewidths=1
+)
+plt.title("有效因子相关性热力图（BP / PB / gpm_semi_YoY）", fontsize=14)
+plt.tight_layout()
+plt.savefig("factor_correlation_heatmap.png", dpi=300)
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
