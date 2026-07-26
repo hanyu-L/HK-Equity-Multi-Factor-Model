@@ -112,6 +112,44 @@ $$OCFG_{ttm} = \frac{ocf_{ttm,current}}{ocf_{ttm,lastyear}} - 1$$
 
 $$ROEG_{ttm} = \frac{roe_{ttm,current}}{roe_{ttm,lastyear}} - 1$$
 
+---
+
+&emsp; $\text{Sales}\_G_{ttm}$: TTM sales year-on-year growth
+
+$$\text{Sales}\_G_{ttm} = \frac{rev_{ttm,current}}{rev_{ttm,lastyear}} - 1$$
+
+&emsp; $\text{Profit}\_G_{ttm}$: TTM net profit year-on-year growth
+
+$$\text{Profit}\_G_{ttm} = \frac{netprofit_{ttm,current}}{netprofit_{ttm,lastyear}} - 1$$
+
+&emsp; $\text{OCF}\_G_{ttm}$: TTM operating cash flow YoY growth 
+
+$$\text{OCF}\_G_{ttm} = \frac{ocf_{ttm,current}}{ocf_{ttm,lastyear}} - 1$$
+
+&emsp; $\text{ROE}\_G_{ttm}$: TTM ROE year-on-year growth
+
+$$\text{ROE}\_G_{ttm} = \frac{roe_{ttm,current}}{roe_{ttm,lastyear}} - 1$$
+
+----
+
+&emsp; $\mathit{\text{Sales}\_G_{ttm}}$: TTM sales year-on-year growth
+
+$$\mathit{\text{Sales}\_G_{ttm}} = \frac{rev_{ttm,current}}{rev_{ttm,lastyear}} - 1$$
+
+&emsp; $\mathit{\text{Profit}\_G_{ttm}}$: TTM net profit year-on-year growth
+
+$$\mathit{\text{Profit}\_G_{ttm}} = \frac{netprofit_{ttm,current}}{netprofit_{ttm,lastyear}} - 1$$
+
+&emsp; $\mathit{\text{OCF}\_G_{ttm}}$: TTM operating cash flow YoY growth 
+
+$$\mathit{\text{OCF}\_G_{ttm}} = \frac{ocf_{ttm,current}}{ocf_{ttm,lastyear}} - 1$$
+
+&emsp; $\mathit{\text{ROE}\_G_{ttm}}$: TTM ROE year-on-year growth
+
+$$\mathit{\text{ROE}\_G_{ttm}} = \frac{roe_{ttm,current}}{roe_{ttm,lastyear}} - 1$$
+
+---
+
 &emsp; 2) Semi-annual single-period YoY growth
 &emsp; This calculation applies exclusively to semi-annual and quarterly filings. Metrics are computed by matching financial statements of the identical reporting frequency from the previous year to derive year-on-year growth for single-period operating indicators and single-period ROE. Observations based on annual reports contain no semi-annual comparative data and are uniformly assigned np.nan.
 
