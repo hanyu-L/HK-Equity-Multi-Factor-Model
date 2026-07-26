@@ -159,8 +159,8 @@ $$cfo\_to\_np_{ttm} = \frac{ocf_{ttm}}{net\_profit_{ttm}}$$
 
 $$roic_{ttm} = \frac{ebit_{ttm}}{invest\_cap_{ttm}}$$
 
-&emsp; 2) Semi-annual YoY quality growth metrics
-&emsp; General formula for year-on-year growth:  
+&emsp; 2) Semi-annual YoY quality growth metrics  
+&emsp; General formula for year-on-year growth:
 
 YoY = $\frac{\text{Current semi-annual single-period metric}}{\text{Prior-year corresponding semi-annual single-period metric}} -1$
 
