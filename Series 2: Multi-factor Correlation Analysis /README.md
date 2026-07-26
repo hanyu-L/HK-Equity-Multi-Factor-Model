@@ -87,7 +87,7 @@ $$PEG = \frac{PE}{{sales\_g}_{ttm}}$$
 #### Growth factors
 &emsp; 1) TTM year-on-year growth
 &emsp; Match the TTM financial statements corresponding to the fiscal closing date lagged by one full year. Observations without complete prior-year financial reports are set to missing.
-&emsp; General formula:
+&emsp; General formula:  
 
 $$G_{ttm} = \frac{X_{ttm,current}}{X_{{ttm,last\_year}}} - 1$$
 
