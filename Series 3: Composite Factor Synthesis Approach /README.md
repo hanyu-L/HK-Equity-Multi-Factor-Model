@@ -109,6 +109,8 @@ $$
 
 This study takes BP, PB and "gpm_semi_YoY"  as candidate factors. The maximization of "IC_IR"  is transformed into minimizing the negative "IC_IR" . Equal weights serve as initial guesses to solve for the global static optimal weights. The composite factor is constructed via the linear combination of raw factors with optimized weights, followed by consistent performance evaluation.  
 The solved optimal weights are "BP"=0.000, "PB"=1.000, and "gpm_semi_YoY"=0.000.  
+
+Result analysis:  
 Backtesting results show that the composite factor under maximum "IC_IR"  optimization achieves an average IC of 0.0685, an "IC_IR"  of 0.435, and a monthly average quintile long-short portfolio return of 0.0189 over the full sample period.  
 The maximum "IC_IR"  optimization scheme delivers reliable predictive power, yet it may yield extreme weight allocations, where the composite factor degenerates into the standalone PB factor. Within the sample period, PB outperforms other factors in predictive performance. Incorporating BP and "gpm_semi_YoY"  introduces signal offset and lowers the overall "IC_IR" , so the optimizer assigns all weights to PB.  
 This method computes static optimal weights based on full-sample historical performance, which induces substantial in-sample overfitting risks. The extreme weight structure abandons multi-style diversification, making the composite factor less robust amid shifts in market investment styles.
@@ -119,6 +121,7 @@ Rolling window: 36 months
 Half-life: 24 months  
 This study implements six composite factor synthesis approaches under a unified monthly cross-sectional backtesting framework. We conduct horizontal performance comparison based on average IC, "IC_IR"  and monthly average quintile long-short portfolio returns.  
 Backtesting performance exhibits clear stratification across methods. Composite factors constructed via maximization of IC, maximization of "IC_IR" , global PCA dimensionality reduction and equal-weighted synthesis generate persistent valid predictive signals. In contrast, three linear weighting schemes, namely static "IC_IR"  weighting, return-based dynamic weighting with half-life decay and dynamic "IC_IR"  weighting with half-life decay, deliver weak performance and cannot reliably produce excess returns.  
+
 Performance divergence stems primarily from whether the multicollinearity between value sub-factors BP and PB is properly addressed. Static and dynamic weighting schemes based on IC time series merely allocate weights according to historical performance and fail to resolve persistent mutual offset of opposing signals between the two correlated value factors, leading to continuous erosion of value-style information. By contrast, PCA preprocessing purifies value-related information and effectively mitigates signal offset. The optimized weights from two weight-maximization models concentrate entirely on the single factor PB, indicating that cross-style factor fusion fails to generate tangible performance gains within the examined sample interval. The above evidence suggests that eliminating intra-style factor redundancy prior to constructing cross-style composite factors constitutes a critical prerequisite for ensuring the predictive power of composite factors.
 
 
