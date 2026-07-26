@@ -173,12 +173,6 @@ $$roaYoY = \frac{roa_{current}}{roa_{lastsemi}} - 1$$
 
 $$gpmSemiYoY = \left(\frac{grossprofit_{current}}{operatingrevenue_{current}} \bigg/ \frac{grossprofit_{lastsemi}}{operatingrevenue_{lastsemi}}\right) - 1$$
 
-
-
-### Selected computational results
-
-
-
 ### 2.2 Price-volume factors
 To align with the monthly static cross-sections used for TTM financial factor construction and facilitate subsequent factor merging, only data observed on the last trading day of each month is adopted for price-volume factor calculation.  
 This approach reduces data volume, shortens computation runtime and streamlines the dataset. The trade-off is the loss of daily granularity. In practical terms, only static price-volume metrics independent of daily historical series can be constructed; momentum, multi-period rolling turnover, idiosyncratic volatility and other indicators requiring continuous daily records are not feasible.  
