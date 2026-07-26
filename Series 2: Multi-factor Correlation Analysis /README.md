@@ -155,9 +155,11 @@ $$cfoToNp_{ttm} = \frac{ocf_{ttm}}{netprofit_{ttm}}$$
 $$roic_{ttm} = \frac{ebit_{ttm}}{investcap_{ttm}}$$
 
 &emsp; 2) Semi-annual YoY quality growth metrics  
-&emsp;    General formula for year-on-year growth:
+&emsp;    General formula for year-on-year growth:  
 
 YoY = $\frac{\text{Current semi-annual single-period metric}}{\text{Prior-year corresponding semi-annual single-period metric}} -1$
+
+$$YoY = \frac{\mathit{\text{Current semi-annual single-period metric}}}{\mathit{\text{Prior-year corresponding semi-annual single-period metric}}} - 1$$
 
 &emsp; If observations are incomplete or the denominator is zero, the factor value will be set to np.nan.
 
