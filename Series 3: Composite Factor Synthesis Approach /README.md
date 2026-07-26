@@ -21,7 +21,8 @@ Backtesting results show that the equal-weighted composite factor achieves an av
 
 ### 1.2 Static IC_IR Weighted Synthesis
 Factor weights are determined by the absolute value of each factor’s full-sample "IC_IR"  to construct the composite factor. Within the value category, BP and PB are weighted by their respective absolute "IC_IR"  values to form an aggregated value factor. The value indicator with stronger "IC_IR"  performance serves as the proxy for the value style, and cross-style weights between the value proxy and the profitability quality factor "gpm_semi_YoY"  are assigned based on absolute "IC_IR" . The cross-style composite factor is thereby constructed, followed by unified performance evaluation.  
-The cross-style weights are reported as 0.757 for the aggregated value factor and 0.243 for the profitability quality factor. Backtesting results indicate that the static "IC_IR"  weighted composite factor yields an average IC of 0.0041, an "IC_IR"  of 0.0314, and a monthly average quintile long-short portfolio return of −0.0004 across the full sample period.  
+The cross-style weights are reported as 0.757 for the aggregated value factor and 0.243 for the profitability quality factor. Backtesting results indicate that the static "IC_IR"  weighted composite factor yields an average IC of 0.0041, an "IC_IR"  of 0.0314, and a monthly average quintile long-short portfolio return of −0.0004 across the full sample period.
+
 Result analysis:  
 The absolute average IC of the composite factor falls below the validity threshold of 0.015, while its "IC_IR"  hovers near zero. The monthly long-short return is slightly negative, implying the factor cannot generate consistent excess returns.  
 The poor performance stems from the strong negative correlation between BP and PB. Static weight allocation based on "IC_IR"  alone fails to fundamentally resolve the mutual offset of opposing signals.  
@@ -39,6 +40,7 @@ $$\mathit{w}_{gap}' = \frac{\mathit{w}_{gap}}{\sum \mathit{w}_{gap}}$$
 
 Normalized weights are applied to compute the weighted average IC. The standard deviation of IC is estimated from the raw unweighted IC time series to derive the real-time IC_IR.  
 Within the value group, BP and PB are dynamically weighted by the absolute value of real-time IC_IR to form an aggregated value factor. The value indicator with higher absolute IC_IR acts as the proxy for the value style. Cross-style weights between this value proxy and the profitability quality factor "gpm_semi_YoY" are assigned according to absolute IC_IR, generating the composite factor on a monthly basis. Boundary checks for denominators are embedded in the code to avoid division-by-zero errors under extreme conditions. Uniform performance evaluation is conducted after composite factor construction.  
+
 Result analysis:  
 The composite factor constructed via dynamic IC_IR weighting with a 24-month half-life fails to deliver satisfactory performance. Backtesting shows that the composite factor achieves an average IC of −0.0039, an "IC_IR"  of −0.0307, and a monthly average quintile long-short portfolio return of 0.0004 over the full sample period, indicating its inability to generate persistent excess returns.  
 
@@ -84,6 +86,7 @@ $$
 This study constructs the optimization problem using the full valid sample, with BP, PB and "gpm_semi_YoY"  as candidate factors. Maximizing IC is transformed into minimizing the negative IC. Equal weights (1/3 for each factor) are adopted as initial guesses to solve for optimal static weights. The composite factor is formed via the linear combination of raw factors with optimized weights, followed by consistent performance evaluation.  
 The solved optimal weights are "BP"=0.000, "PB"=1.000, and "gpm_semi_YoY"=0.000.  
 Backtesting results show that the composite factor under maximum IC optimization achieves an average IC of 0.0685, an "IC_IR"  of 0.435, and a monthly average quintile long-short portfolio return of 0.0206 over the full sample period.  
+
 Result analysis:  
 The maximum IC optimized composite factor delivers the strongest predictive performance. The optimization assigns the full weight to PB, which renders the composite factor identical to the standalone PB factor, with slightly better performance than cross-style composite alternatives.  
 Within the sample period, the profitability quality factor "gpm_semi_YoY"  exhibits weak predictive power, while PB dominates among value factors. In addition, BP and PB are strongly negatively correlated. Incorporating BP introduces signal offset, so the optimizer excludes BP and the profitability quality factor.  
