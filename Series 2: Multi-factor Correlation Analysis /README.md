@@ -163,16 +163,15 @@ $$YoY = \frac{\mathit{\text{Current semi-annual single-period metric}}}{\mathit{
 
 &emsp; roe_6m_YoY: return on equity semi-annual YoY
 
-$$roe\_6m\_YoY = \frac{roe\_6m\_YoY_{current}}{roe\_6m\_YoY_{last\_semi}} - 1$$
+$$roe6mYoY = \frac{roe6m_{current}}{roe6m_{lastsemi}} - 1$$
 
 &emsp; roa_YoY: return on assets semi-annual YoY
 
-$$roa\_YoY = \frac{roa\_YoY_{current}}{roa\_YoY_{last\_semi}} - 1$$
+$$roaYoY = \frac{roa_{current}}{roa_{lastsemi}} - 1$$
 
 &emsp; gpm_semi_YoY: gross profit margin semi-annual YoY
 
-$$gpm\_semi\_YoY = \left(\frac{GrossProfit_{current}}{OperatingRevenue_{current}} \bigg/ \frac{GrossProfit_{last\_semi}}{OperatingRevenue_{last\_semi}}\right) - 1$$
-
+$$gpmSemiYoY = \left(\frac{grossprofit_{current}}{operatingrevenue_{current}} \bigg/ \frac{grossprofit_{lastsemi}}{operatingrevenue_{lastsemi}}\right) - 1$$
 
 
 
