@@ -161,6 +161,8 @@ $$YoY = \frac{\mathit{\text{Current semi-annual single-period metric}}}{\mathit{
 
 $$\mathit{YoY} = \frac{\mathit{Current\;semi\text{-}annual\;single\text{-}period\;metric}}{\mathit{Prior\text{-}year\;corresponding\;semi\text{-}annual\;single\text{-}period\;metric}} - 1$$
 
+$$\mathit{YoY = \frac{Current\;semi\text{-}annual\;single\text{-}period\;metric}{Prior\text{-}year\;corresponding\;semi\text{-}annual\;single\text{-}period\;metric} - 1}$$
+
 &emsp; If observations are incomplete or the denominator is zero, the factor value will be set to np.nan.
 
 &emsp; roe_6m_YoY: return on equity semi-annual YoY
