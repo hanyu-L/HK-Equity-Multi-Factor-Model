@@ -24,45 +24,31 @@ Input dataset:
 &emsp; 3)	如果缺去年同期或去年年报任一，TTM 直接填充 NaN，换句话说，若股票无任何披露财报，全部财务因子填NaN。  
 
 
-#### Valuation factors
-&emsp; 1) Earnings-to-price ratios
+估值因子
+	盈利市值比类
+Earnings per market cap
+〖EP〗_ttm  =  〖NetProfit〗_ttm/MarketCap
+EPcut_ttm: deducted non-recurring earnings per market cap 扣非后净利润(TTM)/总市值 
+〖EPcut〗_ttm  =  〖Net Profit Excluding Non-recurring Items〗_TTM/(Total market_cap)
+	资产市值比类
+BP: book value per market cap 净资产/总市值
+BP =  shareholders' equity/(total market cap)
+SP_ttm: sales revenue per market cap 营业收入(TTM)/总市值 
+〖SP〗_ttm  =  〖revenue〗_ttm/total market cap
+	反向估值乘数
+PE：price earnings ratio 市盈率
+BP =  (total market cap)/〖net revenue〗_ttm 
+PB：price book ratio 市净率
+PB =  (total market cap)/(shareholders' equity)
+PCF：price cash flow ratio 市现率
+PCF =  (total market cap)/〖operating cash flow〗_ttm 
+PS：price sales ratio 市销率
+PS =  (total market cap)/〖revenue〗_ttm 
+	成长估值匹配
+PEG：Price Earnings Growth 市盈率相对盈利增长比率, 增速为 0 时标记缺失.
+PEG =  PE/〖sales_g〗_ttm 
 
-$$EP_{ttm} = \frac{NetProfit_{ttm}}{MarketCap}$$
 
-&emsp; $EPcut_{ttm}$: deducted non-recurring earnings per market cap  
-
-$$EPcut_{ttm} = \frac{NetProfit\ Excluding\ Non-recurring\ Items_{TTM}}{Total\ market\ cap}$$
-
-&emsp; 2) Asset-to-price ratios  
-&emsp; BP: book value per market cap
-
-$$BP = \frac{shareholders' equity}{total market cap}$$
-
-&emsp; $SP_{ttm}$: sales revenue per market cap
-
-$$SP_{ttm} = \frac{revenue_{ttm}}{total market cap}$$
-
-&emsp; 3) Inverted valuation multiples  
-&emsp; PE: price earnings ratio  
-
-$$PE = \frac{total market cap}{net revenue_{ttm}}$$
-
-&emsp; PB: price book ratio
-
-$$PB = \frac{total market cap}{shareholders' equity}$$
-
-&emsp; PCF: price cash flow ratio
-
-$$PCF = \frac{total market cap}{operating cash flow_{ttm}}$$
-
-&emsp; PS: price sales ratio
-
-$$PS = \frac{total market cap}{revenue_{ttm}}$$
-
-&emsp; 4) Growth-value alignment
-&emsp; PEG: price earnings growth. Assign NaN when the growth rate is zero.
-
-$$PEG = \frac{PE}{{sales\_g}_{ttm}}$$
 
 #### Growth factors
 &emsp; 1) TTM year-on-year growth  
