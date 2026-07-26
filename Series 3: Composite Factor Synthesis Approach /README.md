@@ -50,7 +50,9 @@ Principal Component Analysis (PCA), proposed by Pearson in 1901, is a widely ado
 &emsp; 2) Compute the covariance matrix of factors and derive its corresponding eigenvalues and eigenvectors  
 &emsp; 3) Sort eigenvalues in descending order and select the first k principal components whose cumulative explained variance ratio exceeds 85%  
 &emsp; 4) Weight the selected principal components by their respective variance explained ratios and aggregate them linearly to construct the global PCA composite factor  
+
 In this experiment, the first two principal components satisfy the 85% variance threshold, delivering a cumulative explained variance ratio of 0.946. PCA performs linear transformation purely based on the cross-sectional distribution of factor values, without incorporating predictive information such as forward returns or factor IC.  
+
 Backtesting results reveal that the global PCA composite factor achieves an average IC of 0.0661, an "IC_IR"  of 0.4216, and a monthly average quintile long-short portfolio return of 0.0207 over the full sample period.  
 The global PCA composite factor exhibits the strongest return predictability. By jointly reducing the dimensionality of value and profitability quality factors, orthogonal transformation eliminates multicollinearity between BP and PB while preserving independent information embedded in the two investment styles. Unlike IC_IR weighting and other alternative schemes, PCA requires no manual style grouping and does not rely on historical performance to assign weights.  
 
