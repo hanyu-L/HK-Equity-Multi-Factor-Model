@@ -70,15 +70,7 @@ Backtesting outputs show that the composite factor constructed via return-based 
 ### 1.6 IC Maximization of Average IC Weighting
 The maximum IC weighting method originates from Qian’s Quantitative Equity Portfolio Management. Its core objective is to solve for a weight vector that maximizes the correlation between the composite factor and forward returns. The optimization formulation is specified as follows:
 
-$$\max \mathit{IC} = \frac{\vec{w}^{\,T}\cdot \overrightarrow{\mathit{IC}}_{\perp}}{\sqrt{\vec{w}^{\,T} \mathit{V} \vec{w}}}$$
-
----
-
-$\overrightarrow{IC}$
-
 $$\max IC = \frac{\vec{w}^{\,T} \cdot \overrightarrow{IC}}{\sqrt{\vec{w}^{\,T} V \vec{w}}}$$
-
---
 
 where $\vec{w}$ denotes the factor weight vector, $\overrightarrow{IC}$ stands for the vector of average factor IC values, and V represents the cross-sectional correlation matrix of factors. Given that all factors are standardized in advance, the correlation matrix is equivalent to the covariance matrix.  
 To ensure sound economic interpretation and prevent short positions on raw factors, non-negativity constraints are imposed on weights:
