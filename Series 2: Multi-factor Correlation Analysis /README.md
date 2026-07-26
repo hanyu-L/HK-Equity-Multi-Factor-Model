@@ -319,5 +319,60 @@ Cov denotes covariance, and Var represents factor variance.
 &emsp; $\rho=-1$: perfect negative linear correlation  
 &emsp; $\rho=0$: no linear correlation  
 
+### 4.2 Correlation matrix analysis
+We follow conventional criteria widely adopted in multi-factor quantitative research:  
+&emsp; |ρ|>0.7: High linear correlation with substantial information redundancy  
+&emsp; 0.3<|ρ|≤0.7: Moderate correlation indicating partial information overlap  
+&emsp; |ρ|≤0.3: Weak or negligible correlation, implying independent factor dimensions  
+Pearson correlation matrix for the three valid factors:  
+
+ <div align="center">
+</div>
+ <div align="center">
+  
+|               | BP      | PB      | gpm_semi_YoY |
+|---------------|---------|---------|--------------|
+| BP            | 1.0000  | -0.8362 | -0.1003      |
+| PB            | -0.8362 | 1.0000  | 0.1201       |
+| gpm_semi_YoY  | -0.1003 | 0.1201  | 1.0000       |
+
+</div>
+
+Result analysis:  
+Strong negative correlation exists between sub-factors within the same valuation style group.  
+The correlation coefficient between BP and PB reaches −0.8362, representing substantial information redundancy, as the two metrics are mathematical reciprocals of each other.  
+The absolute correlation values between "gpm_semi_YoY"  and valuation factors (BP, PB) are both below 0.2. No significant collinearity is observed, which means this factor delivers independent incremental information.
+
+### 4.3 Multicollinearity
+We identify multicollinearity based on the threshold |ρ|>0.7 for Pearson correlation coefficients. The test outcomes are summarised below:
+
+ <div align="center">
+</div>
+ <div align="center">
+  
+| Factor 1 | Factor 2 | Correlation Coefficient | Test Result                     |
+|----------|----------|--------------------------|---------------------------------|
+| BP       | PB       | -0.8362                  | Multicollinearity detected      |
+
+</div>
+
+Only one pair of high-correlation factors is found across the full sample, and the redundancy is confined to sub-factors within the valuation category. Cross-style factors (valuation and profitability quality metrics) exhibit no substantial information overlap and are free of multicollinearity risks.  
+If BP, PB and "gpm_semi_YoY"  are directly incorporated simultaneously into the weighted multi-factor model, BP and PB will offset each other. The two factors carry signals with opposite directions and highly overlapping information, which undermines the predictive power of the composite factor.  
+
+### 4.4 Correlation analysis and factor combination
+&emsp; 1)	Sub-factors within the same style bucket are prone to multicollinearity. BP and PB are homogeneous valuation metrics exhibiting a strong negative linear correlation; only one of the two shall be retained. 
+&emsp; 2)	Cross-style factors offer diversification benefits in information space. Valuation and profitability quality factors show minimal linear correlation. Integrating these two dimensions diversifies drawdown risks inherent to single-style strategies and enhances the long-run return stability of the composite factor.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
