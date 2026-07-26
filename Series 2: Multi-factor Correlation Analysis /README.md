@@ -112,8 +112,8 @@ $$OCFG_{ttm} = \frac{ocf_{ttm,current}}{ocf_{ttm,lastyear}} - 1$$
 
 $$ROEG_{ttm} = \frac{roe_{ttm,current}}{roe_{ttm,lastyear}} - 1$$
 
-&emsp; 2) Semi-annual single-period YoY growth
-&emsp; This calculation applies exclusively to semi-annual and quarterly filings. Metrics are computed by matching financial statements of the identical reporting frequency from the previous year to derive year-on-year growth for single-period operating indicators and single-period ROE. Observations based on annual reports contain no semi-annual comparative data and are uniformly assigned np.nan.
+&emsp; 2) Semi-annual single-period YoY growth  
+&emsp; This calculation applies exclusively to semi-annual and quarterly filings. Metrics are computed by matching financial statements of the identical reporting frequency from the previous year to derive year-on-year growth for single-period operating indicators and single-period ROE. Observations based on annual reports contain no semi-annual comparative data and are uniformly assigned np.nan.  
 
 &emsp; $SalesG_{6m}$: semi-annual sales year-on-year growth
 
