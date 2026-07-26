@@ -16,11 +16,13 @@ Factor synthesis adopts three valid factors that have undergone industry and mar
 
 ### 1.1 Equal-weighted Synthesis
 The composite factor is constructed by assigning equal weights to all candidate factors. When multiple style groups are involved, factors within each style are aggregated to form style-specific factors first, and cross-style factors are then equally weighted to generate the final composite factor.  
+
 Within the value category, BP and PB exhibit severe multicollinearity. This study adopts principal component analysis (PCA) to extract the first principal component and construct the composite value factor. The composite value factor further equally weighted with the profitability quality factor "gpm_semi_YoY"  to obtain the cross-style composite factor. Factor validity tests are conducted subsequently.  
 Backtesting results show that the equal-weighted composite factor achieves an average IC of 0.056, an "IC_IR"  of 0.3612, and a monthly average quintile long-short portfolio return of 0.0194 over the full sample period.  
 
 ### 1.2 Static IC_IR Weighted Synthesis
 Factor weights are determined by the absolute value of each factor’s full-sample "IC_IR"  to construct the composite factor. Within the value category, BP and PB are weighted by their respective absolute "IC_IR"  values to form an aggregated value factor. The value indicator with stronger "IC_IR"  performance serves as the proxy for the value style, and cross-style weights between the value proxy and the profitability quality factor "gpm_semi_YoY"  are assigned based on absolute "IC_IR" . The cross-style composite factor is thereby constructed, followed by unified performance evaluation.  
+
 The cross-style weights are reported as 0.757 for the aggregated value factor and 0.243 for the profitability quality factor. Backtesting results indicate that the static "IC_IR"  weighted composite factor yields an average IC of 0.0041, an "IC_IR"  of 0.0314, and a monthly average quintile long-short portfolio return of −0.0004 across the full sample period.
 
 Result analysis:  
