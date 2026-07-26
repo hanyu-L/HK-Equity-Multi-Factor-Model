@@ -74,9 +74,24 @@ $$\max \mathit{IC} = \frac{\vec{w}^{\,T}\cdot \overrightarrow{\mathit{IC}}_{\per
 
 ---
 
-$\overrightarrow{\mathit{IC}}\perp$
+$\overrightarrow{IC}$
 
-$$\max \mathit{IC} = \frac{\vec{w}^{\,T} \cdot \overrightarrow{\mathit{IC}}\perp}{\sqrt{\vec{w}^{\,T} \mathit{V} \vec{w}}}$$
+$$\max IC = \frac{\vec{w}^{\,T} \cdot \overrightarrow{IC}}{\sqrt{\vec{w}^{\,T} V \vec{w}}}$$
+
+--
+
+$\overrightarrow{\mathit{IC}}$
+
+$$\max \mathit{IC} = \frac{\vec{w}^{\,T} \cdot \overrightarrow{\mathit{IC}}}{\sqrt{\vec{w}^{\,T} \mathit{V} \vec{w}}}$$
+
+--
+
+$$
+\begin{aligned}
+\max \quad & \mathit{IC} \\
+\text{s.t.} \quad & \vec{w} \ge 0 \\
+& \sum w_i = 1
+\end{aligned}
 
 ---
 
