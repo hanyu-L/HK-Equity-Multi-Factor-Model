@@ -36,4 +36,17 @@ $$
 $$
 
 
+---
+
+$$
+\mathit{\text{gpm\_semi}} = \frac{\text{Gross\_profit}}{\text{Operating\_revenue}}
+$$
+
+$$
+\mathit{\text{gpm\_semi\_YoY}} = \frac{\mathit{\text{gpm\_semi}}_{t}}{\mathit{\text{gpm\_semi}}_{t-2}} - 1
+$$
+
+
+
+
 
