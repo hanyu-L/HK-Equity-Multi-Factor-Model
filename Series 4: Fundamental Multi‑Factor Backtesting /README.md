@@ -22,17 +22,9 @@ This study adopts three earnings growth fundamental factors: semi annual gross p
 
 1) gpm_semi_YoY: semi annual gross profit margin YoY
 
-gpm_semi=\frac{Gross_profit}{Operating_revenue}
-
-gpm_semi_YoY=\frac{gpm_semi_t}{gpm_semi_{t-2}}-1
-
-$$
 gpm\_semi=\frac{Gross\_profit}{Operating\_revenue}
-$$
 
-$$
 gpm\_semi\_YoY=\frac{gpm\_semi_{t}}{gpm\_semi_{t-2}}-1
-$$
 
 
 
