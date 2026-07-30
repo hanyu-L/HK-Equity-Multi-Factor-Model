@@ -56,6 +56,17 @@ $$
 gpmSemiYoY = \frac{gpmSemi_{t}}{gpmSemi_{t-2}} - 1
 $$
 
+---
+
+$$
+gpmSemi = \frac{\text{Gross\_profit}}{\text{Operating\_revenue}}
+$$
+
+$$
+gpmSemiYoY = \frac{gpmSemi_{t}}{gpmSemi_{t-2}} - 1
+$$
+
+
 
 
 
