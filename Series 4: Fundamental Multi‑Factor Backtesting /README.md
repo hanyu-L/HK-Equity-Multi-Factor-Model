@@ -1,1 +1,2 @@
+# Fundamental Multi‑Factor Backtesting  
 In Hong Kong equity market, earnings shifts from corporate financial reports represent key alpha signals for medium to long horizon stock picking. This work develops a fundamental multi factor framework using financial data of Hong Kong listed equities. It walks through data cleaning, factor preprocessing, factor combination and semi annual rebalance backtesting, and adopts standard backtesting to evaluate the strategy’s historical risk return profile.
