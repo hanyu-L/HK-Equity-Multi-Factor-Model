@@ -30,8 +30,15 @@ $$
 gpmSemiYoY = \frac{gpmSemi_{t}}{gpmSemi_{t-2}} - 1
 $$
 
+&emsp;2) roe_6m_YoY: semi annual ROE YoY
 
+$$
+roe = \frac{holderProfit}{ShareholdersEquity}
+$$
 
+$$
+roe6mYoY = \frac{roe_{t}}{roe_{t-2}} - 1
+$$
 
 
 
