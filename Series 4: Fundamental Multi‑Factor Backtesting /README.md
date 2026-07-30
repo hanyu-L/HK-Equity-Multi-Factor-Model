@@ -169,9 +169,17 @@ $$
 &emsp;1) Net Value Curve Performance  
 Driven by bear market conditions, portfolio net value declined throughout 2019 2020. After bottoming out in 2020, the equity curve trended upward amid volatility with higher troughs over time. Returns improved further from 2024 to 2025, delivering positive cumulative performance over the full sample horizon.  
 
+&emsp; 2) Performance Metrics
 
+| Metric                  |   Value   |
+|:------------------------|:---------:|
+| Total Return            |  291.34%  |
+| Annualized Return       |   25.51%  |
+| Max Drawdown            |  -26.85%  |
+| Annual Volatility       |   21.78%  |
+| Sharpe Ratio (2% RF)    |    1.08   |
 
-
+The strategy achieves a total period return of 291.34% and an annualised return of 25.51%. As an unhedged long only strategy for Hong Kong equities, its annualised volatility of 21.78% is consistent with typical market fluctuation characteristics. The maximum drawdown of 26.85% occurred during the early sample bear market episode. With a Sharpe ratio of 1.08, the strategy exhibits favourable risk adjusted return properties overall.
 
 
 
