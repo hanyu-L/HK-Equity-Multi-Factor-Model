@@ -59,7 +59,7 @@ $$
 ---
 
 $$
-gpmSemi = \frac{\text{Gross\_profit}}{\text{Operating\_revenue}}
+gpmSemi = \frac{\text{GrossProfit}}{\text{OperatingRevenue}}
 $$
 
 $$
