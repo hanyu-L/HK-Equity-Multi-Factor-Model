@@ -20,11 +20,11 @@ Industry coverage: IT & Internet, Financials, Real Estate, Consumer, Healthcare,
 ### 2.1 Factor Library  
 This study adopts three earnings growth fundamental factors: semi annual gross profit margin YoY (gpm_semi_YoY), semi annual ROE YoY (roe_6m_YoY), and semi annual ROA YoY (roa_YoY).  
 
-1) gpm_semi_YoY: semi annual gross profit margin YoY
+1) gpm_semi_YoY: semi annual gross profit margin YoY  
 
-gpm\_semi=\frac{Gross\_profit}{Operating\_revenue}
+gpm\_semi=\frac{Gross\_profit}{Operating\_revenue}  
 
-gpm\_semi\_YoY=\frac{gpm\_semi_{t}}{gpm\_semi_{t-2}}-1
+gpm\_semi\_YoY=\frac{gpm\_semi_{t}}{gpm\_semi_{t-2}}-1  
 
 
 
