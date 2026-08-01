@@ -66,6 +66,7 @@ Strategy Net Value Trends with Lagged Rebalancing
 ### 2.3 Test Result  
 
  <div align="center">
+  
 | Rebalancing Mode     | Annualized Return | Maximum Drawdown | Annualized Volatility | Sharpe Ratio |
 |----------------------|-------------------|------------------|-----------------------|--------------|
 | Lag0: base case      | 25.51%            | -26.85%          | 21.78%                | 1.0793       |
