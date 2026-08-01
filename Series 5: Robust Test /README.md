@@ -7,14 +7,14 @@ To rule out overfitting in series 4 multi-factor strategy, we implement robustne
 1.1 Test Framework  
 1.2 Net Value Performance of Grouped Backtests  
 1.3 Test Result	 
-2. Factor Decay Validity Test	 
-2.1 Test Framework	 
-2.2 Net Value Performance of Grouped Backtests	 
-2.3 Test Result	 
-3. Performance Test Across Distinct Market Regimes	 
-3.1 Test Framework and Market Classification	 
-3.2 Performance in Bear, Range-bound and Rising Markets	 
-4. Conclusion	 
+2. Factor Decay Validity Test  
+2.1 Test Framework  
+2.2 Net Value Performance of Grouped Backtests  
+2.3 Test Result  
+3. Performance Test Across Distinct Market Regimes  
+3.1 Test Framework and Market Classification  
+3.2 Performance in Bear, Range-bound and Rising Markets  
+4. Conclusion  
 
 ## 1. Parameter Sensitivity Analysis  
 ### 1.1 Test Framework  
