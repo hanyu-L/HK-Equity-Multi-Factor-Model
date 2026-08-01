@@ -170,7 +170,7 @@ $$
 &emsp;1) Net Value Curve Performance  
 Driven by bear market conditions, portfolio net value declined throughout 2019 2020. After bottoming out in 2020, the equity curve trended upward amid volatility with higher troughs over time. Returns improved further from 2024 to 2025, delivering positive cumulative performance over the full sample horizon.  
 
-(https://github.com/hanyu-L/HK-Equity-Multi-Factor-Model/blob/a32b4df35ac7eafba50ff8f5274ff864598e9984/Series%204%3A%20Fundamental%20Multi%E2%80%91Factor%20Backtesting%20/Net%20Value%20Curve%20Performance.png)
+![performance](https://github.com/hanyu-L/HK-Equity-Multi-Factor-Model/blob/a32b4df35ac7eafba50ff8f5274ff864598e9984/Series%204%3A%20Fundamental%20Multi%E2%80%91Factor%20Backtesting%20/Net%20Value%20Curve%20Performance.png)
 
 &emsp; 2) Performance Metrics
 
