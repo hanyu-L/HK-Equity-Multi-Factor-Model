@@ -1,0 +1,370 @@
+import numpy as np
+import pandas as pd
+from scipy.optimize import minimize
+import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings("ignore")
+plt.rcParams["font.sans-serif"] = ["SimHei"]
+
+# ===================== 全局参数【港股适配】【放到最顶部！】 =====================
+TRANSACTION_COST_RATE = 0.0010    # 双边佣金+滑点
+HONGKONG_STAMP_TAX = 0.0013       # 卖出征收印花税
+TOP_N_STOCK = 30                  # 每期选股数量
+LOOKBACK_WINDOW = 16              # IC时序协方差回溯窗口
+HALF_LIFE = 12                    # 时间衰减权重半衰期 H
+START_YEAR = "2019-01-01"
+END_YEAR = "2025-12-31"
+
+# ===================== 1、读取全部CSV数据源 =====================
+def load_raw_data():
+    # 三大财务报表
+    df_income = pd.read_csv("hk_income.csv", parse_dates=["end_date"])
+    df_balance = pd.read_csv("hk_balancesheet.csv", parse_dates=["end_date"])
+    df_cashflow = pd.read_csv("hk_cashflow.csv", parse_dates=["end_date"])
+    # 指标表（关键：std_report_date 财报披露日期！）
+    df_indicator = pd.read_csv("hk_indicator.csv", parse_dates=["end_date", "std_report_date"])
+    # 行业、行情、指数基准
+    df_industry = pd.read_csv("hk_industry.csv")
+    df_price = pd.read_csv("hk_price.csv", parse_dates=["trade_date"])
+    df_hsi = pd.read_csv("hsi_return.csv", parse_dates=["trade_date"])
+
+    # 合并财务数据，以 ts_code + end_date 主键对齐
+    df_merge = df_indicator.merge(
+        df_income[["ts_code", "end_date", "Operating_revenue", "Gross_profit"]],
+        on=["ts_code", "end_date"], how="left"
+    )
+    df_merge = df_merge.merge(
+        df_balance[["ts_code", "end_date", "Total_assets", "Shareholders_equity"]],
+        on=["ts_code", "end_date"], how="left"
+    )
+    df_merge = df_merge.merge(
+        df_cashflow[["ts_code", "end_date", "Net_cash_from_operating"]],
+        on=["ts_code", "end_date"], how="left"
+    )
+    # 合并行业标签
+    df_merge = df_merge.merge(df_industry, on="ts_code", how="left")
+    # 重命名统一披露日期
+    df_merge = df_merge.rename(columns={"std_report_date": "announce_date"})
+    # 过滤时间区间
+    df_merge = df_merge[(df_merge["announce_date"] >= START_YEAR) & (df_merge["announce_date"] <= END_YEAR)]
+    df_merge = df_merge.dropna(subset=["announce_date"])
+    return df_merge, df_price, df_hsi
+
+# ===================== 2、批量计算全部基本面因子【匹配你的公式】 =====================
+def calc_all_factors(df_raw: pd.DataFrame):
+    df = df_raw.copy()
+    # 基础盈利指标
+    df["oprev"] = df["Operating_revenue"]
+    df["grossprofit"] = df["Gross_profit"]
+    df["netprofit"] = df["holder_profit"]
+    df["equity"] = df["Shareholders_equity"]
+    df["totalasset"] = df["Total_assets"]
+
+    # ROE / ROA 基准
+    df["roe"] = df["netprofit"] / df["equity"]
+    df["roa"] = df["netprofit"] / df["totalasset"]
+
+    # 【gpm_semi_YoY】利润率半年度同比（你的核心公式）
+    df["gpm_semi"] = df["grossprofit"] / df["oprev"]
+    df["gpm_semi_last"] = df.groupby("ts_code")["gpm_semi"].shift(2)
+    df["gpm_semi_YoY"] = (df["gpm_semi"] / df["gpm_semi_last"]) - 1
+
+    # ROE 半年度YoY
+    df["roe_6m"] = df["roe"]
+    df["roe_6m_last"] = df.groupby("ts_code")["roe_6m"].shift(2)
+    df["roe_6m_YoY"] = (df["roe_6m"] / df["roe_6m_last"]) - 1
+
+    # ROA YoY
+    df["roa_last"] = df.groupby("ts_code")["roa"].shift(2)
+    df["roa_YoY"] = (df["roa"] / df["roa_last"]) - 1
+
+    # 时间衰减权重 w_gap
+    df["gap"] = df["announce_date"].dt.year * 12 + df["announce_date"].dt.month
+    df["w_gap"] = 2 ** (-df["gap"] / HALF_LIFE)
+
+    # 市值对数（中性化使用）
+    df["ln_mv"] = np.log(df["total_market_cap"])
+    return df
+
+def standardize_weight(w_arr):
+    """权重标准化"""
+    w_arr = np.array(w_arr)
+    if np.sum(w_arr) == 0:
+        return np.ones_like(w_arr)/len(w_arr)
+    return w_arr / np.sum(w_arr)
+
+# ===================== 3、截面预处理：MAD去极值 + Zscore + 行业市值中性 =====================
+def mad_winsorize(series: pd.Series, n_mad=3):
+    median = series.median()
+    mad = np.abs(series - median).median()
+    scale = 1.4826 * mad
+    upper = median + n_mad * scale
+    lower = median - n_mad * scale
+    return series.clip(lower, upper)
+
+def cross_section_process(df_cross: pd.DataFrame, factor_list):
+    """单截面清洗+中性化"""
+    from statsmodels.formula.api import ols
+    import statsmodels.api as sm
+    df = df_cross.copy()
+    for fac in factor_list:
+        # MAD去极值
+        df[fac] = mad_winsorize(df[fac])
+        # Z-score标准化
+        df[fac] = (df[fac] - df[fac].mean()) / df[fac].std()
+        # 行业+市值中性，残差作为中性因子
+        valid = df.dropna(subset=[fac, "ln_mv", "Industry"])
+        model = ols(f"{fac} ~ C(Industry) + ln_mv", data=valid)
+        res = model.fit()
+        df.loc[valid.index, f"{fac}_neutral"] = res.resid
+    return df
+
+# ===================== 4、IC & ICIR 计算 =====================
+def calc_single_ic(df_cross: pd.DataFrame, factor_col, ret_col="forward_return"):
+    valid = df_cross.dropna(subset=[factor_col, ret_col])
+    if len(valid) < 15:
+        return np.nan
+    return valid[factor_col].corr(valid[ret_col])
+
+# ===================== 5、核心优化求解器：带约束 max IC_IR 权重 =====================
+def objective(w, ic_vec, cov_mat):
+    numerator = w.T @ ic_vec
+    denominator = np.sqrt(w.T @ cov_mat @ w)
+    icir = numerator / denominator
+    return -icir  # scipy最小化，取负
+
+def solve_opt_weight(ic_vector, cov_matrix):
+    n = len(ic_vector)
+    w0 = np.ones(n) / n
+    bounds = [(0.0, 1.0)] * n
+    cons = {"type": "eq", "fun": lambda x: np.sum(x) - 1.0}
+    res = minimize(objective, x0=w0, args=(ic_vector, cov_matrix),
+                   method="SLSQP", bounds=bounds, constraints=[cons])
+    if res.success:
+        return res.x
+    else:
+        print("优化不收敛，使用等权")
+        return np.ones(n)/n
+
+# ===================== 6、因子合成模块 =====================
+def composite_opt_icir(df_cross, fac_neu_list, ic_vec, cov_mat):
+    opt_w = solve_opt_weight(ic_vec, cov_mat)
+    df_cross["composite_opt_icir"] = df_cross[fac_neu_list] @ opt_w
+    return df_cross, opt_w
+
+# ===================== 7、生成未来收益【关键！对齐财报披露日，无未来函数】 =====================
+def build_forward_return(df_factor: pd.DataFrame, df_price: pd.DataFrame, hold_period=120):
+    """
+    hold_period：半年度持仓，约120个交易日
+    根据announce_date，匹配未来区间个股收益 forward_return
+    """
+    df_price["trade_date"] = pd.to_datetime(df_price["trade_date"])
+    df_factor["forward_return"] = np.nan
+    for idx, row in df_factor.iterrows():
+        ts = row["ts_code"]
+        announce_dt = row["announce_date"]
+        price_data = df_price[(df_price["ts_code"] == ts) & (df_price["trade_date"] >= announce_dt)].sort_values("trade_date")
+        if len(price_data) < hold_period:
+            continue
+        start_price = price_data["close"].iloc[0]
+        end_price = price_data["close"].iloc[hold_period]
+        df_factor.at[idx, "forward_return"] = end_price / start_price - 1
+    return df_factor
+
+# ===================== 8、回测主引擎 =====================
+def backtest(df_all: pd.DataFrame, composite_col: str):
+    net = [1.0]
+    date_list = []
+    hold_stock_set = set()
+
+    for trade_dt, cross_df in df_all.groupby("announce_date"):
+        date_list.append(trade_dt)
+        valid = cross_df.dropna(subset=[composite_col, "forward_return"])
+        if len(valid) < TOP_N_STOCK:
+            net.append(net[-1])
+            continue
+        # 选股TopN
+        valid_sort = valid.sort_values(composite_col, ascending=False)
+        select = valid_sort.head(TOP_N_STOCK)["ts_code"].tolist()
+        # 换手率
+        turnover = len(set(select) ^ hold_stock_set) / max(len(select), len(hold_stock_set))
+        raw_ret = valid_sort[valid_sort["ts_code"].isin(select)]["forward_return"].mean()
+        # 交易成本：双边佣金 + 卖出印花税
+        cost = turnover * (TRANSACTION_COST_RATE + HONGKONG_STAMP_TAX)
+        net_ret = raw_ret - cost
+        net.append(net[-1] * (1 + net_ret))
+        hold_stock_set = set(select)
+
+    bt_df = pd.DataFrame({"date": date_list, "net_value": net[1:]})
+    bt_df["date"] = pd.to_datetime(bt_df["date"])
+    return bt_df
+
+def plot_bt(bt_result, name):
+    plt.figure(figsize=(12,6))
+    plt.plot(bt_result["date"], bt_result["net_value"], label=name)
+    plt.legend()
+    plt.title("策略净值曲线")
+    plt.grid(alpha=0.3)
+    plt.show()
+
+# =====================【主执行入口】=====================
+if __name__ == "__main__":
+    # Step1 加载数据
+    df_raw, df_price, df_hsi = load_raw_data()
+    print("数据加载完成")
+
+    # Step2 计算全部因子
+    df_factor = calc_all_factors(df_raw)
+    print("因子计算完成")
+
+    # Step3 构建未来收益（hold_period=120交易日=半年）
+    df_factor = build_forward_return(df_factor, df_price, hold_period=120)
+    df_factor = df_factor.dropna(subset=["forward_return"])
+    print("未来收益构建完成")
+
+    # 定义原始因子列表
+    factor_raw_list = ["gpm_semi_YoY", "roe_6m_YoY", "roa_YoY"]
+    neutral_factor_list = [f"{x}_neutral" for x in factor_raw_list]
+
+    # Step4 逐截面预处理、中性化
+    all_cross_result = []
+    for dt, cross in df_factor.groupby("announce_date"):
+        cross_clean = cross_section_process(cross, factor_raw_list)
+        all_cross_result.append(cross_clean)
+    df_all = pd.concat(all_cross_result)
+    print("截面中性化完成")
+
+    # ==========【关键新增：逐截面因子合成，生成 composite_opt_icir】==========
+    synthesis_result_list = []
+    for dt, cross_df in df_all.groupby("announce_date"):
+        cross = cross_df.copy()
+        cross_valid = cross.dropna(subset=[*neutral_factor_list, "forward_return"])
+        if len(cross_valid) < len(neutral_factor_list):
+            synthesis_result_list.append(cross)
+            continue
+        # 计算当期IC向量
+        ic_vec = np.array([calc_single_ic(cross_valid, col, "forward_return") for col in neutral_factor_list])
+        # 因子协方差矩阵
+        fac_matrix = cross_valid[neutral_factor_list].values
+        cov_mat = np.cov(fac_matrix.T)
+        # 求解最优权重，生成合成因子
+        cross, _ = composite_opt_icir(cross, neutral_factor_list, ic_vec, cov_mat)
+        synthesis_result_list.append(cross)
+
+    df_all = pd.concat(synthesis_result_list)
+    print("因子合成完成，composite_opt_icir 字段生成！")
+
+    # Step6 运行回测
+    df_bt = backtest(df_all, "composite_opt_icir")
+    plot_bt(df_bt, "Max ICIR Constrained Composite Factor")
+
+def calculate_performance_metrics(bt_df, risk_free=0.02):
+    """计算回测绩效指标：总收益、年化收益、最大回撤、年化波动率、夏普比率"""
+    df = bt_df.copy().sort_values("date")
+    df["daily_ret"] = df["net_value"].pct_change()
+    total_days = (df["date"].iloc[-1] - df["date"].iloc[0]).days
+    annual_scale = 365 / total_days
+
+    total_return = df["net_value"].iloc[-1] / df["net_value"].iloc[0] - 1
+    annual_return = (1 + total_return) ** annual_scale - 1
+
+    rolling_max = df["net_value"].cummax()
+    drawdown = (df["net_value"] / rolling_max) - 1
+    max_drawdown = drawdown.min()
+
+    daily_vol = df["daily_ret"].std()
+    annual_vol = daily_vol * np.sqrt(365)
+    sharpe = (annual_return - risk_free) / annual_vol if annual_vol != 0 else np.nan
+
+    metrics = {
+        "Total Return": round(total_return, 4),
+        "Annualized Return": round(annual_return, 4),
+        "Max Drawdown": round(max_drawdown, 4),
+        "Annual Volatility": round(annual_vol, 4),
+        "Sharpe Ratio": round(sharpe, 4)
+    }
+    return metrics
+
+
+def plot_bt_new(bt_result, name):
+    """新版绘图，纯英文，彻底消除中文乱码"""
+    plt.figure(figsize=(12, 6))
+    plt.plot(bt_result["date"], bt_result["net_value"], label=name, linewidth=2)
+    plt.legend(fontsize=12)
+    plt.title("Strategy Net Value Curve", fontsize=14)
+    plt.xlabel("Date", fontsize=11)
+    plt.ylabel("Net Asset Value", fontsize=11)
+    plt.grid(alpha=0.3, linestyle="--")
+    plt.tight_layout()
+    plt.show()
+
+
+# ---------------------- 执行调用（放在原有回测代码之后） ----------------------
+# 原有代码运行得到 df_bt 之后，直接运行下面这一段
+perf_metrics = calculate_performance_metrics(df_bt)
+print("=" * 52)
+print("              Strategy Performance Summary")
+print("=" * 52)
+for key, val in perf_metrics.items():
+    print(f"{key:<22} | {val}")
+print("=" * 52)
+
+# 导出净值数据到csv，方便放进报告
+df_bt.to_csv("backtest_opt_icir_result.csv", index=False)
+print("\nBacktest data saved to backtest_opt_icir_result.csv")
+
+# 使用新版无乱码绘图
+plot_bt_new(df_bt, "Max ICIR Constrained Composite Factor")
+
+# =====================【追加：修正适配半年度调仓的绩效指标函数】=====================
+def calculate_performance_metrics_halfyear(bt_df, risk_free=0.02, period_year=0.5):
+    """
+    适配半年度调仓回测（持仓周期≈0.5年）
+    :param bt_df: date, net_value
+    :param risk_free: 无风险利率 2%
+    :param period_year: 单次调仓持有年限 0.5（半年）
+    """
+    df = bt_df.copy().sort_values("date")
+    # 区间收益率（每期调仓收益）
+    df["period_ret"] = df["net_value"].pct_change()
+    df = df.dropna()
+
+    total_periods = len(df)
+    total_return = df["net_value"].iloc[-1] / df["net_value"].iloc[0] - 1
+
+    # 按调仓周期年化
+    annual_scale = 1 / period_year
+    annual_return = (1 + total_return) ** (annual_scale / total_periods * total_periods) - 1
+    # 等价简化：(期末/期初)^(1/总年限)-1
+    total_years = (df["date"].iloc[-1] - df["date"].iloc[0]).days / 365.0
+    annual_return = (df["net_value"].iloc[-1] / df["net_value"].iloc[0]) ** (1 / total_years) - 1
+
+    # 最大回撤
+    rolling_max = df["net_value"].cummax()
+    drawdown = (df["net_value"] / rolling_max) - 1
+    max_drawdown = drawdown.min()
+
+    # 周期波动率 -> 年化波动率
+    period_vol = df["period_ret"].std()
+    annual_vol = period_vol * np.sqrt(annual_scale)
+    sharpe = (annual_return - risk_free) / annual_vol if annual_vol > 1e-8 else np.nan
+
+    metrics = {
+        "Total Return": round(total_return, 4),
+        "Annualized Return": round(annual_return, 4),
+        "Max Drawdown": round(max_drawdown, 4),
+        "Annual Volatility": round(annual_vol, 4),
+        "Sharpe Ratio": round(sharpe, 4)
+    }
+    return metrics
+
+# =====================【替换调用方式，原来的调用注释掉，启用新版】=====================
+# perf_metrics = calculate_performance_metrics(df_bt)  # 旧版本注释禁用
+perf_metrics = calculate_performance_metrics_halfyear(df_bt)
+
+print("=" * 52)
+print("              Strategy Performance Summary (Fixed Half-Year Horizon)")
+print("=" * 52)
+for key, val in perf_metrics.items():
+    print(f"{key:<22} | {val}")
+print("=" * 52)
