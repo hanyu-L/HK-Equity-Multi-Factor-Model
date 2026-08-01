@@ -33,11 +33,13 @@ All three portfolios suffered drawdowns amid the 2019–2020 bear market and ros
 
 ### 1.3 Test Result
 
+ <div align="center">
 | Portfolio | Annualized Return | Maximum Drawdown | Annualized Volatility | Sharpe Ratio |
 |:---------:|:-----------------:|:----------------:|:---------------------:|:------------:|
 | Top20     | 15.35%            | -41.16%          | 22.61%                | 0.5904       |
 | Top30     | 25.51%            | -26.85%          | 21.78%                | 1.0793       |
 | Top50     | 15.30%            | -33.92%          | 19.35%                | 0.6872       |
+ </div>
 
 Conclusions  
 &emsp;1) All portfolios move in tandem and keep growing even with changed stock counts, proving the multi-factor framework is stable against minor parameter adjustments.
@@ -60,11 +62,13 @@ Strategy Net Value Trends with Lagged Rebalancing
 </div>
 
 ### 2.3 Test Result  
+ <div align="center">
 |      Rebalancing Mode      | Annualized Return | Maximum Drawdown | Annualized Volatility | Sharpe Ratio |
 |:--------------------------:|:-----------------:|:----------------:|:---------------------:|:------------:|
 | Lag0: base case            | 25.51%            | -26.85%          | 21.78%                | 1.0793       |
 | Lag1: 1-cycle lag          | 24.30%            | -26.85%          | 22.18%                | 1.0055       |
 | Lag2: 2-cycle lag          | 19.32%            | -26.85%          | 21.16%                | 0.8184       |
+ </div>
 
 Conclusions:  
 &emsp;1) Drawdown levels stay consistent across groups, proving lagged rebalancing creates no extra downside risk. Returns and Sharpe ratios drop gradually with longer delays, verifying factor decay: newly updated financial signals work best.
@@ -76,11 +80,13 @@ Conclusions:
 We divide the full sample into three periods: bear market (2019–2020), sideways market (2021–2023) and bull uptrend (2024–2025). Period-wise performance is measured to examine how the multi-factor portfolio adapts to different market styles.
 
 ### 3.2 Performance in Bear, Range-bound and Rising Markets  
+ <div align="center">
 | Market Classification         | Annualized Return | Maximum Drawdown | Annualized Volatility | Sharpe Ratio |
 |-------------------------------|-------------------|------------------|-----------------------|--------------|
 | Bear market (2019–2020)       | 70.22%            | -12.30%          | 28.92%                | 2.3592       |
 | Sideways market (2021–2023)   | -2.94%            | -26.85%          | 18.61%                | -0.2656      |
 | Bull uptrend (2024–2025)      | 64.56%            | 0.00%            | 17.23%                | 3.6314       |
+</div>
 
 Conclusion：  
 &emsp;1) The strategy earns positive returns in both bull and bear markets. It achieves 70.22% annual return with merely 12.3% maximum drawdown in the 2019–2020 bear market, and rises steadily without drawdowns (Sharpe = 3.63) in the 2024–2025 uptrend, validating its excess return capacity in trending markets.  
