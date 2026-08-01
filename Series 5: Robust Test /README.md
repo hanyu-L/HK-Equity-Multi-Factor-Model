@@ -23,11 +23,11 @@ The position size of each portfolio is a core adjustable parameter. Severe perfo
 ### 1.2 Net Value Performance of Grouped Backtests  
 All three portfolios suffered drawdowns amid the 2019–2020 bear market and rose synchronously after 2020, sharing highly similar trends. The Top30 portfolio maintained superior net value over the full period, outperforming the Top50 and Top20 portfolios sequentially. Adjusting stock selection quantity fails to reverse the strategy’s long-term trend and only alters return ceilings and volatility levels.  
 
+![test 1](https://github.com/hanyu-L/HK-Equity-Multi-Factor-Model/blob/49917274766a4f60caee85aa5dd8b9a1640ecd3d/Series%205%3A%20Robust%20Test%20/Robust%20Test%201%20-%20Parameter%20Sensitivity%20-%20Different%20Top%20N%20Selection.png)
+
  <div align="center">
 Net Value Trends for Portfolios with Different Stock Capacities<br>
 </div>
-
-![test 1](https://github.com/hanyu-L/HK-Equity-Multi-Factor-Model/blob/49917274766a4f60caee85aa5dd8b9a1640ecd3d/Series%205%3A%20Robust%20Test%20/Robust%20Test%201%20-%20Parameter%20Sensitivity%20-%20Different%20Top%20N%20Selection.png)
 
 All three portfolios suffered drawdowns amid the 2019–2020 bear market and rose synchronously after 2020, sharing highly similar trends. The Top30 portfolio maintained superior net value over the full period, outperforming the Top50 and Top20 portfolios sequentially. Adjusting stock selection quantity fails to reverse the strategy’s long-term trend and only alters return ceilings and volatility levels.  
 
