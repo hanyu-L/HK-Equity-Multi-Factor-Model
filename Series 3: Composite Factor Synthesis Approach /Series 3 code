@@ -1,0 +1,412 @@
+import pandas as pd
+import numpy as np
+from sklearn.decomposition import PCA
+import warnings
+from scipy.optimize import minimize
+warnings.filterwarnings("ignore")
+
+# ====================== 前置全局初始化 ======================
+df_raw = pd.read_csv("valid_factor_for_corr.csv", encoding="utf-8-sig")
+id_cols = ["ts_code", "trade_date", "industry", "next_month_return"]
+factor_cols = ["BP", "PB", "gpm_semi_YoY"]
+
+# 单因子全周期固定绩效
+factor_perf = pd.DataFrame({
+    "factor_name": ["BP", "PB", "gpm_semi_YoY"],
+    "avg_IC": [-0.065152, 0.062149, -0.018228],
+    "IC_IR": [-0.468905, 0.401035, -0.150635],
+    "abs_IR": [abs(-0.468905), abs(0.401035), abs(-0.150635)]
+})
+val_factors = ["BP", "PB"]
+quality_factors = ["gpm_semi_YoY"]
+model_result = []
+
+# 通用绩效计算函数
+def calc_factor_performance(df, comp_col):
+    ic_list = []
+    ls_ret_list = []
+    for dt, group in df.groupby("trade_date"):
+        if len(group) < 30:
+            continue
+        sub = group.dropna(subset=[comp_col, "next_month_return"])
+        if len(sub) < 20:
+            continue
+        ic = sub[[comp_col, "next_month_return"]].corr().iloc[0, 1]
+        ic_list.append(ic)
+        try:
+            sub["quantile"] = pd.qcut(sub[comp_col].rank(method="first"), q=5, labels=[1,2,3,4,5], duplicates="drop")
+            quint_mean = sub.groupby("quantile")["next_month_return"].mean()
+            if {1,5}.issubset(set(quint_mean.index)):
+                ls_ret = quint_mean[5] - quint_mean[1]
+                ls_ret_list.append(ls_ret)
+        except Exception:
+            continue
+    if len(ic_list) == 0:
+        return np.nan, np.nan, np.nan
+    ic_mean = np.mean(ic_list)
+    ic_std = np.std(ic_list)
+    ic_ir = ic_mean / ic_std if ic_std != 0 else np.nan
+    avg_ls = np.mean(ls_ret_list) if len(ls_ret_list) > 0 else np.nan
+    return round(ic_mean, 4), round(ic_ir, 4), round(avg_ls, 4)
+
+##### 前置共用函数
+def calc_factor_performance(df, comp_col):
+    ic_list = []
+    ls_ret_list = []
+    for dt, group in df.groupby("trade_date"):
+        if len(group) < 30:
+            continue
+        sub = group.dropna(subset=[comp_col, "next_month_return"])
+        if len(sub) < 20:
+            continue
+        ic = sub[[comp_col, "next_month_return"]].corr().iloc[0, 1]
+        ic_list.append(ic)
+        try:
+            sub["quantile"] = pd.qcut(sub[comp_col].rank(method="first"), q=5, labels=[1,2,3,4,5], duplicates="drop")
+            quint_mean = sub.groupby("quantile")["next_month_return"].mean()
+            if {1,5}.issubset(set(quint_mean.index)):
+                ls_ret = quint_mean[5] - quint_mean[1]
+                ls_ret_list.append(ls_ret)
+        except Exception:
+            continue
+    if len(ic_list) == 0:
+        return np.nan, np.nan, np.nan
+    ic_mean = np.mean(ic_list)
+    ic_std = np.std(ic_list)
+    ic_ir = ic_mean / ic_std if ic_std != 0 else np.nan
+    avg_ls = np.mean(ls_ret_list) if len(ls_ret_list) > 0 else np.nan
+    return round(ic_mean, 4), round(ic_ir, 4), round(avg_ls, 4)
+
+#################### Equal-weighted Synthesis ####################
+##################################################################
+# ====================== 方法1：等权合成 ======================
+print("\n===== 方法1：等权复合因子 =====")
+df_m1 = df_raw.copy()
+pca_val = PCA(n_components=1)
+val_mat = df_m1[val_factors].dropna()
+df_m1["val_pca"] = np.nan
+df_m1.loc[val_mat.index, "val_pca"] = pca_val.fit_transform(val_mat)[:, 0]
+df_m1["comp_equal"] = df_m1["val_pca"] + df_m1["gpm_semi_YoY"]
+ic_eq, ir_eq, ls_eq = calc_factor_performance(df_m1, "comp_equal")
+model_result.append({
+    "model_name": "等权合成",
+    "avg_IC": ic_eq,
+    "IC_IR": ir_eq,
+    "avg_long_short_ret": ls_eq
+})
+print(f"等权模型：平均IC={ic_eq}, ICIR={ir_eq}, 月度多空收益={ls_eq}")
+
+#################### Static IC_IR Weighted Synthesis ####################
+#########################################################################
+# ====================== 方法2：静态ICIR加权 ======================
+print("\n===== 方法2：静态ICIR加权复合因子 =====")
+df_m2 = df_raw.copy()
+ir_bp = factor_perf[factor_perf["factor_name"]=="BP"]["abs_IR"].values[0]
+ir_pb = factor_perf[factor_perf["factor_name"]=="PB"]["abs_IR"].values[0]
+w_bp = ir_bp / (ir_bp + ir_pb)
+w_pb = ir_pb / (ir_bp + ir_pb)
+df_m2["val_icir"] = w_bp * df_m2["BP"] + w_pb * df_m2["PB"]
+
+ir_gpm = factor_perf[factor_perf["factor_name"]=="gpm_semi_YoY"]["abs_IR"].values[0]
+denominator_cross = max(ir_bp, ir_pb) + ir_gpm
+w_val = max(ir_bp, ir_pb) / denominator_cross
+w_gpm = ir_gpm / denominator_cross
+print(f"跨大类权重：估值综合={round(w_val,3)}, 质量={round(w_gpm,3)}")
+df_m2["comp_icir_static"] = w_val * df_m2["val_icir"] + w_gpm * df_m2["gpm_semi_YoY"]
+ic_static, ir_static, ls_static = calc_factor_performance(df_m2, "comp_icir_static")
+model_result.append({
+    "model_name": "静态ICIR加权",
+    "avg_IC": ic_static,
+    "IC_IR": ir_static,
+    "avg_long_short_ret": ls_static
+})
+print(f"静态ICIR加权：平均IC={ic_static}, ICIR={ir_static}, 月度多空收益={ls_static}")
+
+#################### Dynamic IC_IR Weighting with Half-Life Decay ####################
+######################################################################################
+# ====================== 方法3：24个月半衰期滚动动态ICIR加权（修复除零） ======================
+print("\n===== 方法3：24个月半衰期滚动动态加权 =====")
+df_m3 = df_raw.copy()
+df_m3["comp_dynamic"] = np.nan
+half_life = 24
+decay = np.log(2) / half_life
+window = 36
+all_dates = sorted(df_m3["trade_date"].unique())
+
+for i in range(len(all_dates)):
+    current_dt = all_dates[i]
+    history_dates = all_dates[max(0, i-window):i]
+    hist_df = df_m3[df_m3["trade_date"].isin(history_dates)].copy()
+    if len(hist_df) < 12:
+        continue
+
+    ic_record = {"BP":[], "PB":[], "gpm_semi_YoY":[]}
+    weight_record = []
+    for idx, dt in enumerate(sorted(hist_df["trade_date"].unique())):
+        gap = len(history_dates) - idx
+        decay_weight = np.exp(-decay * gap)
+        month_data = hist_df[hist_df["trade_date"]==dt].dropna(subset=factor_cols+["next_month_return"])
+        if len(month_data) < 20:
+            continue
+        weight_record.append(decay_weight)
+        for f in factor_cols:
+            ic = month_data[[f, "next_month_return"]].corr().iloc[0,1]
+            ic_record[f].append(ic * decay_weight)
+    if len(weight_record) == 0:
+        continue
+
+    total_w = sum(weight_record)
+    ir_dict = {}
+    for f in factor_cols:
+        avg_ic = sum(ic_record[f]) / total_w
+        ic_std = np.std(ic_record[f])
+        ir_dict[f] = abs(avg_ic / ic_std) if ic_std != 0 else 0
+
+    # ---------- 修复1：估值内部权重防除零 ----------
+    sum_ir_val = ir_dict["BP"] + ir_dict["PB"]
+    if sum_ir_val == 0:
+        w_bp_d = 0.5
+        w_pb_d = 0.5
+    else:
+        w_bp_d = ir_dict["BP"] / sum_ir_val
+        w_pb_d = ir_dict["PB"] / sum_ir_val
+    val_d = w_bp_d * df_m3["BP"] + w_pb_d * df_m3["PB"]
+
+    # ---------- 修复2：跨大类权重防除零（报错根源） ----------
+    top_val_ir = max(ir_dict["BP"], ir_dict["PB"])
+    sum_cross = top_val_ir + ir_dict["gpm_semi_YoY"]
+    if sum_cross == 0:
+        w_val_d = 0.5
+        w_gpm_d = 0.5
+    else:
+        w_val_d = top_val_ir / sum_cross
+        w_gpm_d = ir_dict["gpm_semi_YoY"] / sum_cross
+
+    df_m3.loc[df_m3["trade_date"]==current_dt, "comp_dynamic"] = w_val_d * val_d + w_gpm_d * df_m3["gpm_semi_YoY"]
+
+ic_dyn, ir_dyn, ls_dyn = calc_factor_performance(df_m3, "comp_dynamic")
+model_result.append({
+    "model_name": "半衰期动态ICIR加权",
+    "avg_IC": ic_dyn,
+    "IC_IR": ir_dyn,
+    "avg_long_short_ret": ls_dyn
+})
+print(f"动态半衰期加权：平均IC={ic_dyn}, ICIR={ir_dyn}, 月度多空收益={ls_dyn}")
+
+#################### PCA ####################
+#############################################
+# ====================== 方法4：全局PCA三因子联合降维合成 ======================
+print("\n===== 方法4：全因子PCA主成分合成 =====")
+df_m4 = df_raw.copy()
+pca_all = PCA()
+factor_mat = df_m4[factor_cols].dropna()
+pca_result = pca_all.fit_transform(factor_mat)
+cum_var = np.cumsum(pca_all.explained_variance_ratio_)
+k = np.where(cum_var >= 0.85)[0][0] + 1
+print(f"PCA选取前{k}个主成分，累计方差解释：{round(cum_var[k-1],3)}")
+
+comp_pca = np.zeros(len(pca_result))
+for i in range(k):
+    comp_pca += pca_all.explained_variance_ratio_[i] * pca_result[:, i]
+df_m4["comp_pca"] = np.nan
+df_m4.loc[factor_mat.index, "comp_pca"] = comp_pca
+
+ic_pca, ir_pca, ls_pca = calc_factor_performance(df_m4, "comp_pca")
+model_result.append({
+    "model_name": "全局PCA降维合成",
+    "avg_IC": ic_pca,
+    "IC_IR": ir_pca,
+    "avg_long_short_ret": ls_pca
+})
+print(f"PCA合成模型：平均IC={ic_pca}, ICIR={ir_pca}, 月度多空收益={ls_pca}")
+
+#################### Return-Based Dynamic Weighting with Half-Life Decay ####################
+#############################################################################################
+print("\n===== 方法1.2：因子收益率半衰期动态加权 =====")
+df_m12 = df_raw.copy()
+df_m12["comp_return_decay"] = np.nan
+half_life = 24
+decay = np.log(2) / half_life
+window = 36
+all_dates = sorted(df_m12["trade_date"].unique())
+
+# 预计算每期单因子多空收益
+month_ls = {}
+for dt, g in df_m12.groupby("trade_date"):
+    res = {}
+    sub = g.dropna(subset=factor_cols + ["next_month_return"])
+    if len(sub) < 20:
+        month_ls[dt] = None
+        continue
+    for f in factor_cols:
+        sub["q"] = pd.qcut(sub[f].rank(method="first"), q=5, labels=[1,2,3,4,5], duplicates="drop")
+        q_ret = sub.groupby("q")["next_month_return"].mean()
+        if {1,5}.issubset(q_ret.index):
+            res[f] = q_ret[5] - q_ret[1]
+        else:
+            res[f] = 0
+    month_ls[dt] = res
+
+for i in range(len(all_dates)):
+    current_dt = all_dates[i]
+    history_dates = all_dates[max(0, i-window):i]
+    if len(history_dates) < 12:
+        continue
+    ret_sum = {"BP":0, "PB":0, "gpm_semi_YoY":0}
+    total_w = 0
+    for idx, dt in enumerate(history_dates):
+        gap = len(history_dates) - idx
+        w = np.exp(-decay * gap)
+        ls = month_ls.get(dt)
+        if ls is None:
+            continue
+        total_w += w
+        for f in factor_cols:
+            ret_sum[f] += ls[f] * w
+    if total_w == 0:
+        continue
+    # 用衰减加权收益绝对值分配权重
+    abs_ret = {f: abs(ret_sum[f]/total_w) for f in factor_cols}
+    sum_ar = sum(abs_ret.values())
+    if sum_ar == 0:
+        w_bp, w_pb, w_gpm = 1/3, 1/3, 1/3
+    else:
+        w_bp = abs_ret["BP"] / sum_ar
+        w_pb = abs_ret["PB"] / sum_ar
+        w_gpm = abs_ret["gpm_semi_YoY"] / sum_ar
+    # 合成
+    comp_val = w_bp * df_m12["BP"] + w_pb * df_m12["PB"] + w_gpm * df_m12["gpm_semi_YoY"]
+    df_m12.loc[df_m12["trade_date"]==current_dt, "comp_return_decay"] = comp_val
+
+ic_r, ir_r, ls_r = calc_factor_performance(df_m12, "comp_return_decay")
+model_result.append({
+    "model_name": "收益率半衰动态加权",
+    "avg_IC": ic_r,
+    "IC_IR": ir_r,
+    "avg_long_short_ret": ls_r
+})
+print(f"收益率半衰加权：平均IC={ic_r}, ICIR={ir_r}, 月度多空收益={ls_r}")
+
+#################### 1.6 IC Maximization of Average IC Weighting ####################
+#####################################################################################
+print("\n===== 方法1.5：权重优化 - 最大化平均IC =====")
+df_m15 = df_raw.copy()
+data_valid = df_m15.dropna(subset=factor_cols + ["next_month_return"])
+X = data_valid[factor_cols].values
+y = data_valid["next_month_return"].values
+
+# 目标函数：负平均IC（求最小值等价最大化IC）
+def obj_max_ic(w):
+    comp = X @ w
+    corr = np.corrcoef(comp, y)[0,1]
+    return -corr
+# 约束：权重和=1，权重0~1
+cons = ({'type':'eq', 'fun':lambda x: sum(x)-1})
+bnds = [(0,1)]*3
+w0 = np.array([1/3,1/3,1/3])
+res_opt = minimize(obj_max_ic, w0, bounds=bnds, constraints=cons)
+opt_w_ic = res_opt.x
+print(f"最大化IC最优权重 BP:{opt_w_ic[0]:.3f}, PB:{opt_w_ic[1]:.3f}, gpm:{opt_w_ic[2]:.3f}")
+
+df_m15["comp_max_ic"] = df_m15["BP"]*opt_w_ic[0] + df_m15["PB"]*opt_w_ic[1] + df_m15["gpm_semi_YoY"]*opt_w_ic[2]
+ic_mic, ir_mic, ls_mic = calc_factor_performance(df_m15, "comp_max_ic")
+model_result.append({
+    "model_name": "优化最大化IC",
+    "avg_IC": ic_mic,
+    "IC_IR": ir_mic,
+    "avg_long_short_ret": ls_mic
+})
+print(f"最大化IC模型：平均IC={ic_mic}, ICIR={ir_mic}, 月度多空收益={ls_mic}")
+
+#################### Maximization of IC_IR Weighting ####################
+#########################################################################
+print("\n===== 方法1.4：权重优化 - 最大化IC_IR =====")
+df_m14 = df_raw.copy()
+data_valid = df_m14.dropna(subset=factor_cols + ["next_month_return"])
+X = data_valid[factor_cols].values
+y = data_valid["next_month_return"].values
+
+def obj_max_icir(w):
+    comp = X @ w
+    full_df = pd.DataFrame({"comp":comp, "ret":y})
+    ic_list = []
+    for _, g in full_df.groupby(data_valid["trade_date"]):
+        if len(g) < 10:
+            continue
+        ic = g[["comp","ret"]].corr().iloc[0,1]
+        ic_list.append(ic)
+    if len(ic_list) < 5:
+        return 100
+    mic = np.mean(ic_list)
+    sic = np.std(ic_list)
+    icir = mic / sic if sic !=0 else 0
+    return -icir
+
+cons = ({'type':'eq', 'fun':lambda x: sum(x)-1})
+bnds = [(0,1)]*3
+w0 = np.array([1/3,1/3,1/3])
+res_opt_ir = minimize(obj_max_icir, w0, bounds=bnds, constraints=cons)
+opt_w_icir = res_opt_ir.x
+print(f"最大化ICIR最优权重 BP:{opt_w_icir[0]:.3f}, PB:{opt_w_icir[1]:.3f}, gpm:{opt_w_icir[2]:.3f}")
+
+df_m14["comp_max_icir"] = df_m14["BP"]*opt_w_icir[0] + df_m14["PB"]*opt_w_icir[1] + df_m14["gpm_semi_YoY"]*opt_w_icir[2]
+ic_mir, ir_mir, ls_mir = calc_factor_performance(df_m14, "comp_max_icir")
+model_result.append({
+    "model_name": "优化最大化IC_IR",
+    "avg_IC": ic_mir,
+    "IC_IR": ir_mir,
+    "avg_long_short_ret": ls_mir
+})
+print(f"最大化ICIR模型：平均IC={ic_mir}, ICIR={ir_mir}, 月度多空收益={ls_mir}")
+
+#################### Summary ####################
+#################################################
+df_all_comp = df_raw.copy()
+df_all_comp["comp_equal"] = df_m1["comp_equal"]
+df_all_comp["comp_icir_static"] = df_m2["comp_icir_static"]
+df_all_comp["comp_dynamic"] = df_m3["comp_dynamic"]
+df_all_comp["comp_pca"] = df_m4["comp_pca"]
+df_all_comp["comp_return_decay"] = df_m12["comp_return_decay"]
+df_all_comp["comp_max_ic"] = df_m15["comp_max_ic"]
+df_all_comp["comp_max_icir"] = df_m14["comp_max_icir"]
+
+# 完整绩效表排序
+summary_df = pd.DataFrame(model_result)
+summary_df = summary_df.sort_values("IC_IR", ascending=False)
+print("\n==================== 完整6大类合成模型绩效汇总 ====================")
+print(summary_df)
+summary_df.to_csv("all_6composite_model_summary.csv", index=False, encoding="utf-8-sig")
+df_all_comp.to_csv("all_6types_composite_factors.csv", index=False, encoding="utf-8-sig")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
