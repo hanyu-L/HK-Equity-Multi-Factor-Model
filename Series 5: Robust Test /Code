@@ -1,1 +1,132 @@
+# =====================【追加：稳健性测试模块，仅粘贴在脚本末尾，不修改原有代码】=====================
+def backtest_general(df_input: pd.DataFrame, composite_col: str, top_n: int):
+    """通用回测函数，支持自定义选股数量，复用原有逻辑"""
+    net = [1.0]
+    date_list = []
+    hold_stock_set = set()
 
+    for trade_dt, cross_df in df_input.groupby("announce_date"):
+        date_list.append(trade_dt)
+        valid = cross_df.dropna(subset=[composite_col, "forward_return"])
+        if len(valid) < top_n:
+            net.append(net[-1])
+            continue
+        valid_sort = valid.sort_values(composite_col, ascending=False)
+        select = valid_sort.head(top_n)["ts_code"].tolist()
+        turnover = len(set(select) ^ hold_stock_set) / max(len(select), top_n)
+        raw_ret = valid_sort[valid_sort["ts_code"].isin(select)]["forward_return"].mean()
+        cost = turnover * (TRANSACTION_COST_RATE + HONGKONG_STAMP_TAX)
+        net_ret = raw_ret - cost
+        net.append(net[-1] * (1 + net_ret))
+        hold_stock_set = set(select)
+
+    bt_df = pd.DataFrame({"date": date_list, "net_value": net[1:]})
+    bt_df["date"] = pd.to_datetime(bt_df["date"])
+    return bt_df
+
+
+def calc_perf(bt_df, rf=0.02):
+    """快速计算指标，复用半年度口径"""
+    df = bt_df.copy().sort_values("date")
+    df["period_ret"] = df["net_value"].pct_change()
+    df = df.dropna()
+    if len(df) < 3:
+        return {}
+    total_years = (df["date"].iloc[-1] - df["date"].iloc[0]).days / 365.0
+    total_return = df["net_value"].iloc[-1] / df["net_value"].iloc[0] - 1
+    annual_return = (1 + total_return) ** (1 / total_years) - 1
+
+    rolling_max = df["net_value"].cummax()
+    drawdown = (df["net_value"] / rolling_max) - 1
+    max_dd = drawdown.min()
+
+    period_vol = df["period_ret"].std()
+    annual_vol = period_vol * np.sqrt(2)
+    sharpe = (annual_return - rf) / annual_vol if annual_vol > 1e-8 else np.nan
+
+    res = {
+        "AnnualReturn": round(annual_return,4),
+        "MaxDD": round(max_dd,4),
+        "AnnVol": round(annual_vol,4),
+        "Sharpe": round(sharpe,4)
+    }
+    return res
+
+
+# ========== 测试1：参数敏感性｜不同选股数量 Top20 / Top30 / Top50 ==========
+print("\n" + "="*60)
+print("【Robust Test 1: Parameter Sensitivity — Different Top N Selection】")
+top_list = [20,30,50]
+bt_dict = {}
+for n in top_list:
+    bt_res = backtest_general(df_all, "composite_opt_icir", top_n=n)
+    bt_dict[f"Top{n}"] = bt_res
+    perf = calc_perf(bt_res)
+    print(f"Top{n} Stocks | {perf}")
+
+# 绘图对比
+plt.figure(figsize=(12,6))
+for name, data in bt_dict.items():
+    plt.plot(data["date"], data["net_value"], label=name, linewidth=1.8)
+plt.title("Strategy Curve: Different Top N Selection")
+plt.xlabel("Date")
+plt.ylabel("Net Asset Value")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+
+# ========== 测试2：因子衰减测试｜延迟1期、2期调仓 ==========
+print("\n" + "="*60)
+print("【Robust Test 2: Factor Decay Test — Lag Rebalance】")
+# lag=0原始；lag=1延迟一期；lag=2延迟两期
+df_lag0 = df_all.copy()
+bt_lag0 = backtest_general(df_lag0, "composite_opt_icir", TOP_N_STOCK)
+
+# 构造滞后信号（平移一期announce_date截面模拟延迟调仓）
+cross_list = [cross for _, cross in df_all.groupby("announce_date")]
+lag1_cross = cross_list[:-1]
+lag2_cross = cross_list[:-2]
+df_lag1 = pd.concat(lag1_cross)
+df_lag2 = pd.concat(lag2_cross)
+
+bt_lag1 = backtest_general(df_lag1, "composite_opt_icir", TOP_N_STOCK)
+bt_lag2 = backtest_general(df_lag2, "composite_opt_icir", TOP_N_STOCK)
+
+lag_bt = {
+    "Lag0 (Original)": bt_lag0,
+    "Lag1 Rebalance": bt_lag1,
+    "Lag2 Rebalance": bt_lag2
+}
+for lab, data in lag_bt.items():
+    p = calc_perf(data)
+    print(f"{lab:<16} | {p}")
+
+plt.figure(figsize=(12,6))
+for name, data in lag_bt.items():
+    plt.plot(data["date"], data["net_value"], label=name, linewidth=1.8)
+plt.title("Factor Decay: Performance with Delayed Rebalance")
+plt.xlabel("Date")
+plt.ylabel("Net Asset Value")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+
+# ========== 测试3：行情分段检验（简易划分：熊市2019-2020，震荡2021-2023，上行2024-2025） ==========
+print("\n" + "="*60)
+print("【Robust Test 3: Performance in Different Market Regimes】")
+regime_splits = [
+    ("2019-01-01","2020-12-31","Bear Market 2019-2020"),
+    ("2021-01-01","2023-12-31","Sideways 2021-2023"),
+    ("2024-01-01","2025-12-31","Uptrend 2024-2025")
+]
+for start, end, name in regime_splits:
+    df_sub = df_all[(df_all["announce_date"] >= start) & (df_all["announce_date"] <= end)]
+    bt_sub = backtest_general(df_sub, "composite_opt_icir", TOP_N_STOCK)
+    p = calc_perf(bt_sub)
+    print(f"{name:<22} | {p}")
+
+print("="*60 + "\nAll robustness tests finished!")
