@@ -112,7 +112,8 @@ $$
 ICIR = \frac{\bar{IC}}{\sigma(IC_t)}
 $$
 
-- $\bar{IC}$ is the time‑series mean of IC; $\sigma(IC)$ is its time‑series standard deviation.
+- $\bar{IC}$ is the time‑series mean of IC
+- $\sigma(IC)$ is its time‑series standard deviation.
 
 ## 3. Multi Factor Combination  
 Following preprocessing and effectiveness evaluation, all three earnings growth factors exhibit positive predictive power. Nevertheless, individual factors show considerable time series volatility in their IC values. This study therefore adopts a constrained optimisation approach that maximises IC_IR subject to non negative weight constraints, to solve for factor weights and construct the composite stock selection factor.
