@@ -86,6 +86,7 @@ We divide the full sample into three periods: bear market (2019–2020), sideway
 ### 3.2 Performance in Bear, Range-bound and Rising Markets  
 
  <div align="center">
+  
 | Market Classification         | Annualized Return | Maximum Drawdown | Annualized Volatility | Sharpe Ratio |
 |-------------------------------|-------------------|------------------|-----------------------|--------------|
 | Bear market (2019–2020)       | 70.22%            | -12.30%          | 28.92%                | 2.3592       |
