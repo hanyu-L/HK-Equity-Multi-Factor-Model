@@ -33,13 +33,15 @@ All three portfolios suffered drawdowns amid the 2019–2020 bear market and ros
 
 ### 1.3 Test Result
 
- <div align="center">
+<div align="center">
+
 | Portfolio | Annualized Return | Maximum Drawdown | Annualized Volatility | Sharpe Ratio |
-|-----------|-------------------|------------------|-----------------------|--------------|
+|:---------:|:-----------------:|:----------------:|:---------------------:|:------------:|
 | Top20     | 15.35%            | -41.16%          | 22.61%                | 0.5904       |
 | Top30     | 25.51%            | -26.85%          | 21.78%                | 1.0793       |
 | Top50     | 15.30%            | -33.92%          | 19.35%                | 0.6872       |
- </div>
+
+</div>
 
 Conclusions  
 &emsp;1) All portfolios move in tandem and keep growing even with changed stock counts, proving the multi-factor framework is stable against minor parameter adjustments.
