@@ -44,8 +44,8 @@ All three portfolios suffered drawdowns amid the 2019–2020 bear market and ros
 </div>
 
 Conclusions  
-&emsp;1) All portfolios move in tandem and keep growing even with changed stock counts, proving the multi-factor framework is stable against minor parameter adjustments.
-&emsp;2) The optimal portfolio size is 30 stocks, which achieves the best return, drawdown control and Sharpe ratio. A 20-stock portfolio suffers concentration risk, while a 50-stock portfolio includes low-alpha stocks and earns lower returns.
+&emsp;1) All portfolios move in tandem and keep growing even with changed stock counts, proving the multi-factor framework is stable against minor parameter adjustments.  
+&emsp;2) The optimal portfolio size is 30 stocks, which achieves the best return, drawdown control and Sharpe ratio. A 20-stock portfolio suffers concentration risk, while a 50-stock portfolio includes low-alpha stocks and earns lower returns.  
 
 ## 2. Factor Decay Validity Test  
 ### 2.1 Test Framework  
@@ -75,9 +75,9 @@ Strategy Net Value Trends with Lagged Rebalancing
  </div>
 
 Conclusions:  
-&emsp;1) Drawdown levels stay consistent across groups, proving lagged rebalancing creates no extra downside risk. Returns and Sharpe ratios drop gradually with longer delays, verifying factor decay: newly updated financial signals work best.
-&emsp;2) A single cycle of rebalancing lag only slightly hurts returns, so the strategy retains profitability in real trading as long as rebalancing delays stay within one cycle, granting decent operational flexibility.
-&emsp;3) The factor is effective but fades slowly over time. In practice, investors ought to refresh factors and rebalance positions immediately after earnings announcements.
+&emsp;1) Drawdown levels stay consistent across groups, proving lagged rebalancing creates no extra downside risk. Returns and Sharpe ratios drop gradually with longer delays, verifying factor decay: newly updated financial signals work best.  
+&emsp;2) A single cycle of rebalancing lag only slightly hurts returns, so the strategy retains profitability in real trading as long as rebalancing delays stay within one cycle, granting decent operational flexibility.  
+&emsp;3) The factor is effective but fades slowly over time. In practice, investors ought to refresh factors and rebalance positions immediately after earnings announcements.  
 
 ## 3. Performance Test Across Distinct Market Regimes  
 ### 3.1 Test Framework and Market Classification  
@@ -97,7 +97,7 @@ We divide the full sample into three periods: bear market (2019–2020), sideway
 Conclusion：  
 &emsp;1) The strategy earns positive returns in both bull and bear markets. It achieves 70.22% annual return with merely 12.3% maximum drawdown in the 2019–2020 bear market, and rises steadily without drawdowns (Sharpe = 3.63) in the 2024–2025 uptrend, validating its excess return capacity in trending markets.  
 &emsp;2) The strategy underperforms slightly during 2021–2023 sideways consolidation, posting a -2.94% annual return and the largest full-period drawdown of 26.85%. Random stock fluctuations break fundamental factor pricing rules and hinder alpha generation.  
-&emsp;3) This strategy works best under trending regimes. To avoid losses in sideways markets, investors can reduce positions or halt the strategy when prolonged consolidation is expected.
+&emsp;3) This strategy works best under trending regimes. To avoid losses in sideways markets, investors can reduce positions or halt the strategy when prolonged consolidation is expected.  
 
 ## 4. Conclusion  
 Backtest results show that the strategy remains stable with varying stock selection quantities, and the 30-stock portfolio delivers the best performance. The factor decays slowly, and one-period lagged rebalancing only slightly impairs returns, ensuring practical operability in real trading. The strategy is profitable in both bull and bear markets but underperforms with notable drawdowns in sideways markets. With solid overall robustness and no reliance on bullish trends, the strategy can be further improved by incorporating market style judgment to mitigate losses in oscillating market conditions.  
