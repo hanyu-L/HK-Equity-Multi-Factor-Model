@@ -168,7 +168,7 @@ $$
 
 ## 5. Analysis of Strategy Backtest Results  
 &emsp;1) Net Value Curve Performance  
-Driven by bear market conditions, portfolio net value declined throughout 2019 2020. After bottoming out in 2020, the equity curve trended upward amid volatility with higher troughs over time. Returns improved further from 2024 to 2025, delivering positive cumulative performance over the full sample horizon.  
+Driven by bear market conditions, portfolio net value declined throughout 2019 - 2020. After bottoming out in 2020, the equity curve trended upward amid volatility with higher troughs over time. Returns improved further from 2024 to 2025, delivering positive cumulative performance over the full sample horizon.  
 
 <div align="center">
 
