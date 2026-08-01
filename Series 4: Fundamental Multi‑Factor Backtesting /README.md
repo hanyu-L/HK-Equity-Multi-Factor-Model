@@ -87,7 +87,7 @@ $$
 - $\ln MV$: logarithm of total market value  
 - Residual $\varepsilon$ corresponds to $factorNeutral$, the neutralised factor fed into factor combination.
 
-##2.3 Factor Effectiveness Test. 
+##2.3 Factor Effectiveness Test  
 Before weighted multi factor synthesis, we test each single factor’s predictability of future returns using cross sectional IC and time series ICIR.
 
 &emsp;1) Cross sectional Information Coefficient  
@@ -171,6 +171,8 @@ Driven by bear market conditions, portfolio net value declined throughout 2019 2
 
 &emsp; 2) Performance Metrics
 
+ <div align="center">
+   
 | Metric                  |   Value   |
 |:------------------------|:---------:|
 | Total Return            |  291.34%  |
@@ -178,6 +180,8 @@ Driven by bear market conditions, portfolio net value declined throughout 2019 2
 | Max Drawdown            |  -26.85%  |
 | Annual Volatility       |   21.78%  |
 | Sharpe Ratio (2% RF)    |    1.08   |
+
+</div>
 
 The strategy achieves a total period return of 291.34% and an annualised return of 25.51%. As an unhedged long only strategy for Hong Kong equities, its annualised volatility of 21.78% is consistent with typical market fluctuation characteristics. The maximum drawdown of 26.85% occurred during the early sample bear market episode. With a Sharpe ratio of 1.08, the strategy exhibits favourable risk adjusted return properties overall.
 
