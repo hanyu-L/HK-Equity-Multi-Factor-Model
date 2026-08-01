@@ -57,11 +57,11 @@ Raw financial factors feature outliers, inconsistent scales and style biases and
 
 $$
 \begin{aligned}
-\mathrm{Med} &= \mathrm{median}(factor) \\
-\mathrm{MAD} &= \mathrm{median}\big(|factor - \mathrm{Med}|\big) \\
-\mathrm{Scale} &= 1.4826 \times \mathrm{MAD} \\
-\mathrm{Upper} &= \mathrm{Med} + 3 \times \mathrm{Scale} \\
-\mathrm{Lower} &= \mathrm{Med} - 3 \times \mathrm{Scale}
+Med &= median(factor) \\
+MAD &= median\big(|factor - Med|\big) \\
+Scale &= 1.4826 \times MAD \\
+Upper &= Med + 3 \times Scale \\
+Lower &= Med - 3 \times Scale
 \end{aligned}
 $$
 
